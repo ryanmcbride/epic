@@ -71,7 +71,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4279795170205656}
   m_Layer: 0
-  m_Name: "Arke\u0300"
+  m_Name: "Ark\xE8"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -176,7 +176,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: f5fd5673357c51a4b924378fe217f473, type: 2}
   m_StaticBatchInfo:
@@ -211,7 +210,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: f5fd5673357c51a4b924378fe217f473, type: 2}
   m_StaticBatchInfo:
@@ -246,7 +244,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: f5fd5673357c51a4b924378fe217f473, type: 2}
   m_StaticBatchInfo:
@@ -281,7 +278,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: f5fd5673357c51a4b924378fe217f473, type: 2}
   m_StaticBatchInfo:
