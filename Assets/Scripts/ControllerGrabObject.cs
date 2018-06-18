@@ -69,9 +69,18 @@ public class ControllerGrabObject : MonoBehaviour
 
         collidingObject = col.gameObject;
     }
+    
 
     void Update()
     {
+        if (collidingObject)
+        {
+            BudgetSpawner.BudgetHover(collidingObject);
+        } else
+        {
+            BudgetSpawner.BudgetBlur();
+        }
+
         if (Controller.GetHairTriggerDown())
         {
             if (collidingObject)
@@ -85,6 +94,18 @@ public class ControllerGrabObject : MonoBehaviour
             if (objectInHand)
             {
                 ReleaseObject();
+            }
+        }
+
+        if (Controller.GetPressDown(SteamVR_Controller.ButtonMask.ApplicationMenu))
+        {
+            if (collidingObject)
+            {
+                BudgetSpawner.GotoSubBudget(collidingObject);
+            }
+            else
+            {
+                BudgetSpawner.GotoMainBudget();
             }
         }
     }

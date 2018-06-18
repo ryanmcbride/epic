@@ -8,17 +8,17 @@ using UnityEngine;
 public class BubbleBudget
 {
     private static float CENTER_MASS = 1000.0f;
-    private static float CENTER_HEIGHT = 2.0f;
+    private static float CENTER_HEIGHT = 1.3f;
     private static float ALPHA = 150.0f / 255.0f;
     private static float UNIT_SPHERE_VOLUME = 4.19f;
     private static float SPRING_DAMPER = 5.0f;
     private static float INITIAL_TORQUE_Y = 10.0f;
-    private static float DRAG = 10.0f;
+    private static float DRAG = 30.0f;
 
     private List<GameObject> spheres;
     private List<GameObject> icons;
     private Vector3 spawnerPosition;
-    GameObject center;
+    public GameObject center;
 
     public BubbleBudget(Vector3 parentPosition, Budget[] budgets, bool isSubBudget)
     {
@@ -30,12 +30,14 @@ public class BubbleBudget
         float max = budget.amount;
 
         center = CreateBubble(1.0f, budget);
-        if (isSubBudget) {
+        if (isSubBudget)
+        {
             center.GetComponent<MeshRenderer>().material.color = new Color(1.0f, 1.0f, 1.0f, ALPHA);
         }
-        Rigidbody rigidBody = center.GetComponent<Rigidbody>() as Rigidbody;
-        rigidBody.mass = CENTER_MASS;
         center.transform.position = new Vector3(spawnerPosition.x, spawnerPosition.y + CENTER_HEIGHT, spawnerPosition.z);
+
+        float previous_magnitude = 0.0f;
+        float previous_angle = (float)(Math.PI * 0.5f); // 90 degrees (or up)
 
         for (int i = 1; i < budgets.Length; ++i)
         {
@@ -43,15 +45,30 @@ public class BubbleBudget
 
             float volume = UNIT_SPHERE_VOLUME * (budget.amount / max);
             float radius = (float)Math.Pow(0.75f * volume / Math.PI, 0.333333f);
-            float scale = radius;
+            //float scale = radius;
 
-            GameObject sub = CreateBubble(scale, budget);
+            GameObject sub = CreateBubble(radius, budget);
             sub.transform.parent = center.transform;
-            // Place on unit circle in the xy plane
-            float angle = (float)(UnityEngine.Random.value * Math.PI * 2.0);
-            float magnitude = (1.0f + scale) * 0.75f;
-            sub.transform.localPosition = new Vector3((float)Math.Cos(angle) * magnitude, (float)Math.Sin(angle) * magnitude, 0.0f);
 
+            float magnitude = (1.0f + radius);
+            if (i == 1)
+            {
+                sub.transform.localPosition = Vector3.up * magnitude * 0.5f;
+            }
+            else
+            {
+                float a = previous_magnitude;
+                float b = previous_magnitude - 1.0f + radius;
+                float c = 1.0f + radius;
+                float angle_b = (float)Math.Acos((c * c + a * a - b * b) / (2.0 * c * a)) + previous_angle;
+                Debug.LogFormat("{0} {1} {2} {3}", a, b, c, angle_b);
+                sub.transform.localPosition = new Vector3((float)Math.Cos(angle_b) * magnitude * 0.5f, (float)Math.Sin(angle_b) * magnitude * 0.5f, 0.0f);
+                previous_angle = angle_b;
+            }
+            previous_magnitude = magnitude;
+
+            // Place on unit circle in the xy plane
+            //float angle = (float)(UnityEngine.Random.value * Math.PI * 2.0);
             SpringJoint springJoint = sub.AddComponent<SpringJoint>() as SpringJoint;
             springJoint.damper = SPRING_DAMPER;
             springJoint.maxDistance = 0.0f;
@@ -90,8 +107,8 @@ public class BubbleBudget
         rigidBody.isKinematic = false;
         rigidBody.detectCollisions = true;
         rigidBody.useGravity = false;
-        rigidBody.AddTorque(0.0f, INITIAL_TORQUE_Y, 0.0f);
-        rigidBody.drag = DRAG;
+        //rigidBody.AddTorque(0.0fdddds, INITIAL_TORQUE_Y, 0.0f);
+        rigidBody.drag = 100.0f;
 
         GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
         plane.GetComponent<MeshRenderer>().material = (Material)Resources.Load("Materials/auto", typeof(Material));
@@ -100,6 +117,17 @@ public class BubbleBudget
         plane.transform.parent = sphere.transform;
         plane.transform.localPosition = Vector3.zero;
         plane.transform.localScale = new Vector3(0.02f / scale, 0.02f / scale, 0.02f / scale);
+
+        // create 3d text mesh
+        GameObject textGameObject = new GameObject();
+        TextMesh textMesh = textGameObject.AddComponent<TextMesh>() as TextMesh;
+        textMesh.anchor = TextAnchor.MiddleCenter;
+        //textMesh.font = font;
+        textGameObject.transform.parent = plane.transform;
+        textGameObject.transform.localEulerAngles = new Vector3(90.0f, 0.1f, 180.0f);
+        textGameObject.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+        textGameObject.transform.localPosition = new Vector3(0.0f, 0.0f, 4.0f);
+        textGameObject.SetActive(false);
 
         icons.Add(plane);
         spheres.Add(sphere);
@@ -113,7 +141,7 @@ public class BubbleBudget
     }
 
     // Update is called once per frame
-    public void Update()
+    public void Update(GameObject colliding)
     {
         // Slowly oscillate the central budget up & down and around
         if (center)
@@ -126,13 +154,28 @@ public class BubbleBudget
         {
             icon.transform.LookAt(Camera.main.transform.position, Vector3.up);
             icon.transform.Rotate(new Vector3(90, 0, 0), Space.Self);
+            GameObject text = icon.transform.GetChild(0).gameObject;
+            text.SetActive(false);
+        }
+
+        foreach (GameObject sphere in spheres)
+        {
+            float scale = sphere == colliding ? 1.7f : 1.5f;
+
+            GameObject textObject = sphere.transform.GetChild(0).transform.GetChild(0).gameObject;
+            textObject.SetActive(true);
+            textObject.transform.localScale = new Vector3(scale, scale, scale);
+            TextMesh mesh = textObject.GetComponent<TextMesh>();// as TextMesh;
+            BudgetData budgetData = sphere.GetComponent<BudgetData>() as BudgetData;
+            mesh.text = budgetData.display;
         }
     }
 
     public void Animate(Vector3 start, Vector3 startScale, float t)
     {
-        center.transform.position = Vector3.Lerp(start, new Vector3(spawnerPosition.x, spawnerPosition.y + CENTER_HEIGHT, spawnerPosition.z), t);
-        center.transform.localScale = Vector3.Lerp(startScale, new Vector3(1.0f, 1.0f, 1.0f), t);
+        float t2 = 1.0f + (--t) * t * t * t * t;
+        center.transform.position = Vector3.Lerp(start, new Vector3(spawnerPosition.x, spawnerPosition.y + CENTER_HEIGHT, spawnerPosition.z), t2);
+        center.transform.localScale = Vector3.Lerp(startScale, new Vector3(1.0f, 1.0f, 1.0f), t2);
     }
 
     private string CategoryGuidToTextureName(string category_guid)
@@ -190,10 +233,11 @@ public class BudgetData : MonoBehaviour
     public string category_guid;
 }
 
-public class BudgetSpawner : MonoBehaviour {
+public class BudgetSpawner : MonoBehaviour
+{
 
     [DllImport("moneymobilex_unity")]
-    private static extern int sanity_check();
+    private static extern float sanity_check();
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void LoginDelegate(bool success);
@@ -214,25 +258,22 @@ public class BudgetSpawner : MonoBehaviour {
     private static BubbleBudget mainBudget;
     private static BubbleBudget subBudget;
     private static BudgetsCollection budgets;
-
+    private static Vector3 spawnerPosition;
     private static string USERNAME = "march17";
     private static string PASSWORD = "anypass";
-    private int nextUpdate = 1;
-    private float lerp = 1.0f;
-    private Vector3 startScale;
-    private Vector3 startPosition;
-    private static Vector3 spawnerPosition;
+    private static int nextUpdate = 1;
+    private static float lerp = 1.0f;
+    private static Vector3 startScale;
+    private static Vector3 startPosition;
+    private static GameObject colliding;
 
     public static void SyncCallback()
     {
         IntPtr budgets_ptr = getModel("budgets");
         string budgets_json = Marshal.PtrToStringAnsi(budgets_ptr);
-
         budgets = JsonUtility.FromJson<BudgetsCollection>(budgets_json);
 
         Debug.LogFormat("{0}", budgets_json);
-
-        //spawnerPosition = this.gameObject.transform.position;
         mainBudget = new BubbleBudget(spawnerPosition, GetBudgets(""), false /* is sub budget */);
     }
 
@@ -252,97 +293,59 @@ public class BudgetSpawner : MonoBehaviour {
     // Use this for initialization
     public void Start()
     {
-        spawnerPosition = gameObject.transform.position;
+        Debug.LogFormat("Start!");
         Debug.LogFormat("Called sanity_check() => {0}", sanity_check());
         login(USERNAME, PASSWORD, LoginCallback);
-        Debug.LogFormat("Called Login");
+        spawnerPosition = this.gameObject.transform.position;
     }
 
     // Update is called once per frame
     public void Update()
     {
-        if (mainBudget != null) { mainBudget.Update(); }
-        if (subBudget != null) {
-            lerp += Time.deltaTime;
+        if (mainBudget != null) { mainBudget.Update(colliding); }
+        if (subBudget != null)
+        {
+            lerp += Time.deltaTime * 2.0f;
             if (lerp > 1.0f) lerp = 1.0f;
 
             subBudget.Animate(startPosition, startScale, lerp);
-            subBudget.Update();
+            subBudget.Update(colliding);
         }
-        
+
         // Heartbeat every 1 second
         if (Time.time >= nextUpdate)
         {
             nextUpdate = Mathf.FloorToInt(Time.time) + 1;
-            Debug.LogFormat("heartbeat");
             heartbeat();
         }
-
-        if (Input.GetKey("escape")) System.Diagnostics.Process.GetCurrentProcess().Kill();
     }
 
-    // Picking
-    void OnGUI()
+    public static void GotoMainBudget()
     {
-        Vector3 p = new Vector3();
-        Vector3 p2 = new Vector3();
+        if (subBudget != null) subBudget.SetActive(false);
+        if (mainBudget != null) mainBudget.SetActive(true);
+        subBudget = null;
+    }
 
-        Camera c = Camera.main;
-        Event e = Event.current;
-        Vector2 mousePos = new Vector2();
+    public static void GotoSubBudget(GameObject obj)
+    {
+        if (subBudget != null) return; /* already in sub-budget */
 
-        // Get the mouse position from Event.
-        // Note that the y position from Event is inverted.
-        mousePos.x = e.mousePosition.x;
-        mousePos.y = c.pixelHeight - e.mousePosition.y;
+        BudgetData budgetData = obj.GetComponent<BudgetData>() as BudgetData;
+        mainBudget.SetActive(false);
+        lerp = 0.0f;
+        startPosition = obj.transform.position;
+        startScale = obj.transform.localScale;
+        subBudget = new BubbleBudget(spawnerPosition, GetBudgets(budgetData.guid), true /* is sub budget */);
+    }
 
-        // TODO: To convert to Vive controllers, change p to controller position
-        // & change p2 to controller position + controller direction * magnitude
-        p = c.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, c.nearClipPlane));
-        p2 = c.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, c.farClipPlane));
+    public static void BudgetBlur()
+    {
+        colliding = null;
+    }
 
-        // Go back to "main" budget
-        if (Input.GetMouseButton(1))
-        {
-            if (subBudget != null) subBudget.SetActive(false);
-            if (mainBudget != null) mainBudget.SetActive(true);
-            subBudget = null;
-        }
-
-        RaycastHit hit;
-        if (Physics.Raycast(p, p2 - p, out hit, Mathf.Infinity, 0xFF)) {
-            if (hit.rigidbody)
-            {
-                GameObject hitObject = hit.transform.gameObject;
-                BudgetData budgetData = hitObject.GetComponent<BudgetData>() as BudgetData;
-
-                // Go to "sub" budget
-                if (Input.GetMouseButtonDown(0) && subBudget == null)
-                {
-                    //Debug.LogFormat("Category Guid => {0}", budgetData.guid);
-                    mainBudget.SetActive(false);
-
-                    lerp = 0.0f;
-                    startPosition = hit.transform.position;
-                    startScale = hit.transform.localScale;
-                    subBudget = new BubbleBudget(spawnerPosition, GetBudgets(budgetData.guid), true /* is sub budget */);
-                }
-
-                // "Hit" a budget
-                else if (Input.GetMouseButtonDown(2))
-                {
-                    //Debug.LogFormat("Distance => {0}", hit.distance);
-                    Vector3 force = p - p2;
-                    force.Normalize();
-                    hit.rigidbody.AddForceAtPosition(force * -100.0f * hit.distance, hit.point);
-                }
-
-                GUIStyle style = new GUIStyle();
-                style.fontSize = 24;
-                style.normal.textColor = Color.white;
-                Vector3 screenPos = c.WorldToScreenPoint(hit.point);
-                GUI.Label(new Rect(screenPos.x, c.pixelHeight - screenPos.y, 200, 100), budgetData.display, style);
-            }
-        }
+    public static void BudgetHover(GameObject obj)
+    {
+        colliding = obj;
     }
 }
