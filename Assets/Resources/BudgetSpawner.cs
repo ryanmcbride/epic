@@ -225,54 +225,54 @@ public class Budget
     public string name;
 }
 
-[System.Serializable]
-public class AccountsCollection
-{
-    public Account[] items;
-}
+// [System.Serializable]
+// public class AccountsCollection
+// {
+//     public Account[] items;
+// }
 
-[System.Serializable]
-public class Account
-{
-    public string account_subtype;
-    public int account_type;
-    public float apr;
-    public float apy;
-    public float available_balance;
-    public float available_credit;
-    public float balance;
-    public bool is_closed;
-    public float credit_limit;
-    public string day_payment_is_due;
-    public string external_guid;
-    public int feed_account_type;
-    public float feed_apr;
-    public float feed_apy;
-    public string guid;
-    public bool has_monthly_transfer_limit;
-    public string institution_guid;
-    public float interest_rate;
-    public bool is_hidden;
-    public bool is_manual;
-    public bool is_personal;
-    public string matures_on;
-    public string member_guid;
-    public bool member_is_managed_by_user;
-    public float minimum_balance;
-    public int monthly_transfer_count;
-    public string name;
-    public string nickname;
-    public float original_balance;
-    public float payoff_balance;
-    public float pending_balance;
-    public string property_type;
-    public int revision;
-    public string started_on;
-    public float statement_balance;
-    public string user_guid;
-    public float minimum_payment;
-    public string payment_due_at;
-}
+// [System.Serializable]
+// public class Account
+// {
+//     public string account_subtype;
+//     public int account_type;
+//     public float apr;
+//     public float apy;
+//     public float available_balance;
+//     public float available_credit;
+//     public float balance;
+//     public bool is_closed;
+//     public float credit_limit;
+//     public string day_payment_is_due;
+//     public string external_guid;
+//     public int feed_account_type;
+//     public float feed_apr;
+//     public float feed_apy;
+//     public string guid;
+//     public bool has_monthly_transfer_limit;
+//     public string institution_guid;
+//     public float interest_rate;
+//     public bool is_hidden;
+//     public bool is_manual;
+//     public bool is_personal;
+//     public string matures_on;
+//     public string member_guid;
+//     public bool member_is_managed_by_user;
+//     public float minimum_balance;
+//     public int monthly_transfer_count;
+//     public string name;
+//     public string nickname;
+//     public float original_balance;
+//     public float payoff_balance;
+//     public float pending_balance;
+//     public string property_type;
+//     public int revision;
+//     public string started_on;
+//     public float statement_balance;
+//     public string user_guid;
+//     public float minimum_payment;
+//     public string payment_due_at;
+// }
 
 // "User data" that gets attached to a bubble
 public class BudgetData : MonoBehaviour
@@ -354,7 +354,7 @@ public class BudgetSpawner : MonoBehaviour
 
     public static Budget[] GetBudgets(string parent_guid)
     {
-        Budget[] subset = budgets.budgets.Where(b => ((b.parent_guid == parent_guid || b.parent_guid == null) || b.guid == parent_guid) && b.name != "Income").ToArray();
+        Budget[] subset = budgets.budgets.Where( b => ((b.parent_guid == parent_guid || b.parent_guid == null) || b.guid == parent_guid) && b.name != "Income").ToArray();
         Debug.LogFormat("{0}", "Subset Length: "+subset.Length);
         Array.Sort<Budget>(subset, (left, right) => right.amount.CompareTo(left.amount));
         return subset;
