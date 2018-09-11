@@ -20,14 +20,15 @@ public class BubbleBudget
     private Vector3 spawnerPosition;
     public GameObject center;
 
-    public BubbleBudget(Vector3 parentPosition, Budget[] budgets, bool isSubBudget)
+    public BubbleBudget(Vector3 parentPosition, BudgetsManager.Budget[] budgets, bool isSubBudget)
     {
         spawnerPosition = parentPosition;
         icons = new List<GameObject>();
         spheres = new List<GameObject>();
 
-        Budget budget = budgets[0];
+        BudgetsManager.Budget budget = budgets[0];
         float max = budget.amount;
+        Debug.Log("Budget Name: " + budget.name);
 
         center = CreateBubble(1.0f, budget);
         if (isSubBudget)
@@ -47,6 +48,7 @@ public class BubbleBudget
             float radius = (float)Math.Pow(0.75f * volume / Math.PI, 0.333333f);
             //float scale = radius;
 
+            Debug.Log("Volume: " + volume + " Radius: " + radius + " Budget amount: " + budget.amount + " Max: " + max);
             GameObject sub = CreateBubble(radius, budget);
             sub.transform.parent = center.transform;
 
@@ -82,9 +84,9 @@ public class BubbleBudget
         center.SetActive(active);
     }
 
-    private GameObject CreateBubble(float scale, Budget budget)
+    private GameObject CreateBubble(float scale, BudgetsManager.Budget budget)
     {
-        float percent_spent = budget.transaction_total / budget.amount;
+        double percent_spent = budget.transaction_total / budget.amount;
 
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         sphere.GetComponent<MeshRenderer>().material = (Material)Resources.Load("Materials/TranslucentGreen", typeof(Material));
@@ -208,22 +210,22 @@ public class BubbleBudget
     }
 }
 
-[System.Serializable]
-public class BudgetsCollection
-{
-    public Budget[] budgets;
-}
+//[System.Serializable]
+//public class BudgetsCollection
+//{
+//    public Budget[] budgets;
+//}
 
-[System.Serializable]
-public class Budget
-{
-    public float amount;
-    public float transaction_total;
-    public string guid;
-    public string category_guid;
-    public string parent_guid;
-    public string name;
-}
+//[System.Serializable]
+//public class Budget
+//{
+//    public float amount;
+//    public float transaction_total;
+//    public string guid;
+//    public string category_guid;
+//    public string parent_guid;
+//    public string name;
+//}
 
 // [System.Serializable]
 // public class AccountsCollection
@@ -327,7 +329,7 @@ public class BudgetSpawner : MonoBehaviour
 
     private static BubbleBudget mainBudget;
     private static BubbleBudget subBudget;
-    private static BudgetsCollection budgets;
+    private static List<BudgetsManager.Budget> budgets;
     private static Vector3 spawnerPosition;
     private static string USERNAME = "march17";
     private static string PASSWORD = "anypass";
@@ -345,18 +347,27 @@ public class BudgetSpawner : MonoBehaviour
 
         //Mac code
         string budgets_json = getModel("budgets");
-        budgets = JsonUtility.FromJson<BudgetsCollection>(budgets_json);
+        BudgetsManager manager = (BudgetsManager)GameObject.Find("Managers").GetComponent("BudgetsManager");
+        manager.Start();
+        budgets = manager.getBudgets();
+        Debug.Log("FirstBudgetS Name: " + budgets[0].name + " FirstBudgetS Amount: " + budgets[0].amount);
+        Debug.Log("SecondBudgetS Name: " + budgets[1].name + " SecondBudgeS Amount: " + budgets[1].amount);
+        //budgets = JsonUtility.FromJson<BudgetsManager.BudgetCollection>(budgets_json);
 
         Debug.LogFormat("{0}", budgets_json);
-        Debug.LogFormat("{0}", "Budget Size:"+budgets.budgets.Length);
+        Debug.LogFormat("{0}", "Budget Size:"+budgets.Count);
         mainBudget = new BubbleBudget(spawnerPosition, GetBudgets(""), false /* is sub budget */);
     }
 
-    public static Budget[] GetBudgets(string parent_guid)
+    public static BudgetsManager.Budget[] GetBudgets(string parent_guid)
     {
-        Budget[] subset = budgets.budgets.Where( b => ((b.parent_guid == parent_guid || b.parent_guid == null) || b.guid == parent_guid) && b.name != "Income").ToArray();
+        BudgetsManager.Budget[] subset = budgets.Where( b => (b.parent_guid == parent_guid || b.guid == parent_guid || (parent_guid == "" && b.parent_guid == null)) && b.name != "Income").ToArray();
         Debug.LogFormat("{0}", "Subset Length: "+subset.Length);
-        Array.Sort<Budget>(subset, (left, right) => right.amount.CompareTo(left.amount));
+        Array.Sort<BudgetsManager.Budget>(subset, (left, right) => right.amount.CompareTo(left.amount));
+        Debug.Log("FirstBudget Name: " + subset[0].name + " FirstBudget Amount: " + subset[0].amount);
+        Debug.Log("SecondBudget Name: " + subset[1].name + " SecondBudget Amount: " + subset[1].amount);
+        Debug.Log("FirstBudgetB Name: " + budgets[0].name + " FirstBudgetB Amount: " + budgets[0].amount);
+        Debug.Log("SecondBudgetB Name: " + budgets[1].name + " SecondBudgetB Amount: " + budgets[1].amount);
         return subset;
     }
 
@@ -412,6 +423,7 @@ public class BudgetSpawner : MonoBehaviour
         lerp = 0.0f;
         startPosition = obj.transform.position;
         startScale = obj.transform.localScale;
+        Debug.Log("GotoSubBudget!!");
         subBudget = new BubbleBudget(spawnerPosition, GetBudgets(budgetData.guid), true /* is sub budget */);
     }
 
