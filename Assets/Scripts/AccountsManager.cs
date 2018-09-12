@@ -71,13 +71,13 @@ public class Account
         MISCELLANEOUS = 9
     }
 
-    public enum Supertype {
+    public enum SuperType {
         ASSET = 1,
         LIABILITY = 2,
         UNKNOWN = 3
     }
 
-    public string account_subtype;
+    public Subtype account_subtype;
     public Type account_type;
     public float apr;
     public float apy;
@@ -115,6 +115,40 @@ public class Account
     public string user_guid;
     public float minimum_payment;
     public string payment_due_at;
+
+    public SuperType GetSuperType() {
+      switch (account_type) {
+        case Type.CHECKING:
+        case Type.SAVINGS:
+        case Type.INVESTMENT:
+        case Type.PROPERTY:
+        case Type.CASH:
+        case Type.PREPAID: return SuperType.ASSET;
+        case Type.LOAN:
+        case Type.CREDIT_CARD:
+        case Type.LINE_OF_CREDIT:
+        case Type.MORTGAGE:
+        case Type.INSURANCE: return SuperType.LIABILITY;
+        default: break;
+      }
+
+      return SuperType.UNKNOWN;
+    }
+
+    public string GetFormattedBalance() {
+      // TODO: Account for `+` and `-`
+      return string.Format("{0:C2}", balance);
+    }
+
+    public Color32 GetBalanceColor() {
+      // TODO: Fix this logic
+      if (GetSuperType() == SuperType.LIABILITY) {
+        if (balance < 0 ) { return new Color32(235, 52, 52, 255); }
+      } else if (GetSuperType() == SuperType.ASSET) {
+        if (balance > 0 ) { return new Color32(21, 199, 100, 255); }
+      }
+      return new Color32(71, 79, 89, 255);
+    }
 };
 
 public class AccountsManager : MonoBehaviour {

@@ -110,6 +110,21 @@ public class Transaction
 	public string check_number;
 	public string feed_check_number;
 	public string merchant_guid;
+
+
+    public string GetFormattedBalance() {
+      // TODO: Account for `+` and `-`
+      return string.Format("{0:C2}", amount);
+    }
+
+    public Color32 GetBalanceColor() {
+      // TODO: Fix this logic
+      if (transaction_type == Type.CREDIT) {
+        return new Color32(21, 199, 100, 255);
+      }
+      return new Color32(71, 79, 89, 255);
+    }
+
 };
 
 public class TransactionManager : MonoBehaviour {
