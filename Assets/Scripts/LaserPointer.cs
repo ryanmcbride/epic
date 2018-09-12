@@ -21,6 +21,7 @@
  */
 
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LaserPointer : MonoBehaviour
 {
@@ -28,6 +29,7 @@ public class LaserPointer : MonoBehaviour
     public Transform headTransform; // The camera rig's head
     public Vector3 teleportReticleOffset; // Offset from the floor for the reticle to avoid z-fighting
     public LayerMask teleportMask; // Mask to filter out areas where teleports are allowed
+    public LayerMask warpMask; // Mask to filter out areas where teleports are allowed
 
     private SteamVR_TrackedObject trackedObj;
 
@@ -41,6 +43,7 @@ public class LaserPointer : MonoBehaviour
 
     private Vector3 hitPoint; // Point where the raycast hits
     private bool shouldTeleport; // True if there's a valid teleport target
+    private bool shouldWarp;
 
     private SteamVR_Controller.Device Controller
     {
@@ -82,6 +85,22 @@ public class LaserPointer : MonoBehaviour
                 shouldTeleport = true;
             }
         }
+        //Is the trigger held down?
+        else if (Controller.GetPress(SteamVR_Controller.ButtonMask.Trigger))
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(trackedObj.transform.position, transform.forward, out hit, 100, warpMask))
+            {
+                hitPoint = hit.point;
+
+                ShowLaser(hit);
+                reticle.SetActive(true);
+                teleportReticleTransform.position = hitPoint + teleportReticleOffset;
+
+                shouldWarp = true;
+
+            }
+        }
         else // Touchpad not held down, hide laser & teleport reticle
         {
             laser.SetActive(false);
@@ -89,6 +108,11 @@ public class LaserPointer : MonoBehaviour
         }
 
         // Touchpad released this frame & valid teleport position found
+        if (Controller.GetPressUp(SteamVR_Controller.ButtonMask.Touchpad) && shouldTeleport)
+        {
+            Teleport();
+        }
+
         if (Controller.GetPressUp(SteamVR_Controller.ButtonMask.Touchpad) && shouldTeleport)
         {
             Teleport();
@@ -112,5 +136,12 @@ public class LaserPointer : MonoBehaviour
         difference.y = 0; // Don't change the final position's y position, it should always be equal to that of the hit point
 
         cameraRigTransform.position = hitPoint + difference; // Change the camera rig position to where the the teleport reticle was. Also add the difference so the new virtual room position is relative to the player position, allowing the player's new position to be exactly where they pointed. (see illustration)
+    }
+
+    private void Warp()
+    {
+        shouldWarp = false; // Teleport in progress, no need to do it again until the next touchpad release
+        reticle.SetActive(false); // Hide reticle
+        SceneManager.LoadScene("AVP5_VR"); // Warp to new scene
     }
 }
