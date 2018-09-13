@@ -349,7 +349,7 @@ public class BudgetSpawner : MonoBehaviour
         string budgets_json = getModel("budgets");
         BudgetsManager manager = (BudgetsManager)GameObject.Find("Managers").GetComponent("BudgetsManager");
         manager.Start();
-        budgets = manager.getBudgets();
+        budgets = manager.GetBudgets();
         Debug.Log("FirstBudgetS Name: " + budgets[0].name + " FirstBudgetS Amount: " + budgets[0].amount);
         Debug.Log("SecondBudgetS Name: " + budgets[1].name + " SecondBudgeS Amount: " + budgets[1].amount);
         //budgets = JsonUtility.FromJson<BudgetsManager.BudgetCollection>(budgets_json);

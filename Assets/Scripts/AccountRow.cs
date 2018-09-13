@@ -5,6 +5,7 @@ using TMPro;
 
 public class AccountRow : MonoBehaviour {
 
+	public GameObject background;
   public TextMeshPro accountName;
   public TextMeshPro accountType;
   public TextMeshPro balance;
@@ -12,9 +13,14 @@ public class AccountRow : MonoBehaviour {
 	// Use this for initialization
 	public void Start () {
 		// Verify we have all required elements
+		Debug.Assert(background != null, "Missing Background Component");
 		Debug.Assert(accountName != null, "Missing Account Name Component");
 		Debug.Assert(accountType != null, "Missing Account Type Component");
 		Debug.Assert(balance != null, "Missing Balance Component");
+
+		// Fetch the Material from the Renderer of the Background GameObject
+		_background_material = background.GetComponent<Renderer>().material;
+		Debug.Assert(_background_material != null, "Missing Background Material");
 	}
 
 	public void SetAccount(Account account) {
@@ -25,5 +31,25 @@ public class AccountRow : MonoBehaviour {
 		balance.color = account.GetBalanceColor();
 	}
 
+	public void SetSelected(bool selected) {
+		if (selected) {
+			var color = new Color32(128, 191, 255, 255);
+			_background_material.color = color;
+			_background_material.SetColor("_EmissionColor", color);
+			/*
+			//_background_material.emissionColor = new Color32(128, 191, 255, 255);
+			var colors = _background_material.GetColorArray();
+			Debug.Log("Set Selected: Num Colors (" + colors.Length + ")");
+			foreach (var color in colors)	{
+				Debug.Log("Set Selected Color (" + color.ToString() + ")");
+			}
+			*/
+		} else {
+			_background_material.color = Color.white;
+			_background_material.SetColor("_EmissionColor", Color.white);
+		}
+	}
+
 	protected Account _account;
+  protected Material _background_material;
 }

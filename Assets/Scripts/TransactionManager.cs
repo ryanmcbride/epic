@@ -139,7 +139,11 @@ public class TransactionManager : MonoBehaviour {
 
   public bool hasData() { return _has_data; }
 	public List<Transaction> getTransactions(string account_guid) {
-		return _transactions_by_account[account_guid];
+		if(_transactions_by_account.ContainsKey(account_guid)) {
+			return _transactions_by_account[account_guid];	
+		} else {
+			return new List<Transaction>();
+		}
 	}
 
 	protected void _fetch_data() {

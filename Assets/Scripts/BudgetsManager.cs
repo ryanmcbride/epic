@@ -2,10 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class BudgetsManager : MonoBehaviour {
-
-    public BudgetCollection collection;
 
 	[System.Serializable]
 	public class BudgetCollection
@@ -46,8 +43,16 @@ public class BudgetsManager : MonoBehaviour {
 		_budgets = new List<Budget>();
 		_sub_budgets = new SortedDictionary<string, List<Budget>>();
 
+		_fetch_data();
+}
+
+	public bool hasData() { return _has_data; }
+	public List<Budget> GetBudgets() { return _budgets;	}
+	public List<Budget> GetSubBudgets(string budget_guid) {	return _sub_budgets[budget_guid];	}
+
+	protected void _fetch_data() {
     Debug.Log("Loading Budgets");
-    collection = JsonUtility.FromJson<BudgetCollection>(_budgets_json);
+    var collection = JsonUtility.FromJson<BudgetCollection>(_budgets_json);
 		foreach (var b in collection.budgets) {
 			  var budget = JsonUtility.FromJson<Budget>(JsonUtility.ToJson(b));
 				if(budget.parent_guid.Length == 0) {
@@ -61,19 +66,11 @@ public class BudgetsManager : MonoBehaviour {
 				}
 		}
     Debug.Log("Loaded " + _budgets.Count + " Budgets");
-  }
-
-    public BudgetCollection GetCollection() {
-        return collection;
-    }
-
-	public List<Budget> getBudgets() {
-		return _budgets;
-	}
-	public List<Budget> getSubBudgets(string budget_guid) {
-		return _sub_budgets[budget_guid];
+  	_has_data = true;
 	}
 
+  protected bool _has_data = false;
+	protected BudgetCollection collection;												 // Complete Budget List
 	protected List<Budget> _budgets; 															 // Top level budgets
 	protected SortedDictionary<string, List<Budget>> _sub_budgets; // Sub-budgets based on budget guid
 

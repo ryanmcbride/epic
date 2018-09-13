@@ -25,12 +25,12 @@ public class AccountListVertical : MonoBehaviour {
 	}
 
 	public void SetAccounts(List<Account> accounts) {
-		foreach (var account_rows in _account_rows) {
-			Object.Destroy(account_rows);
+		foreach (var row in _account_rows) {
+			Object.Destroy(row);
 		}
 		_accounts = accounts;
 		_account_rows = new List<AccountRow>(accounts.Count);
-		float row_height = 2.0f; // accountRowPrefab.transform.position.height;
+		float row_height = 2.0f; // accountRowPrefab.transform.boundingBox.height;
     float row_offset = row_height + 0.5f;
     for (int ii = 0; ii < _accounts.Count; ii++) {
 			var rot = transform.rotation;
@@ -39,6 +39,16 @@ public class AccountListVertical : MonoBehaviour {
 				// TODO: Animate rows into place
 				account_row.SetAccount(_accounts[ii]);
 				_account_rows.Add(account_row);
+		}
+	}
+
+	public void SelectAccount(int index) {
+		if(_accounts.Count == 0) { return; }
+
+		var index_to_select = index % _account_rows.Count;
+		for (int ii = 0; ii < _account_rows.Count; ii++) {
+		  bool is_selected = ii == index_to_select;
+			_account_rows[ii].SetSelected(is_selected);
 		}
 	}
 

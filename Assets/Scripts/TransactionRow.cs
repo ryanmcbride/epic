@@ -5,6 +5,7 @@ using TMPro;
 
 public class TransactionRow : MonoBehaviour {
 
+  public GameObject background;
   public TextMeshPro dateText;
   public TextMeshPro payeeText;
   public TextMeshPro categoryText;
@@ -14,6 +15,7 @@ public class TransactionRow : MonoBehaviour {
 	// Use this for initialization
 	public void Start () {
 		// Verify we have all required elements
+		Debug.Assert(background != null, "Missing Background Component");
 		Debug.Assert(dateText != null, "Missing Date Component");
 		Debug.Assert(payeeText != null, "Missing Payee Component");
 		Debug.Assert(categoryText != null, "Missing Category Component");

@@ -61,7 +61,7 @@ GameObject:
   - component: {fileID: 222320520931652766}
   - component: {fileID: 114078328023773182}
   m_Layer: 0
-  m_Name: AccountText
+  m_Name: InstitutionText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -146,8 +146,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1453259632833900}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.75, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 34, y: 64.76, z: 33.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4968879735505376}
@@ -158,7 +158,7 @@ Transform:
   - {fileID: 224575219023545298}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!4 &4968879735505376
 Transform:
   m_ObjectHideFlags: 1
@@ -538,7 +538,7 @@ MonoBehaviour:
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
-  m_isInputParsingRequired: 0
+  m_isInputParsingRequired: 1
   m_inputSource: 0
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 23347596241837456}
@@ -563,6 +563,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf260de70ec2f4332976c26c64b9aca6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  background: {fileID: 1045479247900434}
   dateText: {fileID: 114516379024255562}
   payeeText: {fileID: 114355538340521774}
   categoryText: {fileID: 114478603737707954}
