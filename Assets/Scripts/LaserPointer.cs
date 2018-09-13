@@ -142,6 +142,12 @@ public class LaserPointer : MonoBehaviour
     {
         shouldWarp = false; // Teleport in progress, no need to do it again until the next touchpad release
         reticle.SetActive(false); // Hide reticle
-        SceneManager.LoadScene("AVP5_VR"); // Warp to new scene
+
+        // Warp to new scene
+        if (SceneManager.GetActiveScene().name == "AVP5_VR") {
+            SceneManager.LoadScene("MXVRScene");
+        } else {
+            SceneManager.LoadScene("AVP5_VR");
+        }
     }
 }
