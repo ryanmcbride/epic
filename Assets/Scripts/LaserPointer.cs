@@ -113,9 +113,9 @@ public class LaserPointer : MonoBehaviour
             Teleport();
         }
 
-        if (Controller.GetPressUp(SteamVR_Controller.ButtonMask.Touchpad) && shouldTeleport)
+        if (Controller.GetPressUp(SteamVR_Controller.ButtonMask.Trigger) && shouldWarp)
         {
-            Teleport();
+            Warp();
         }
     }
 
