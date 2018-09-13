@@ -83,6 +83,8 @@ public class LaserPointer : MonoBehaviour
                 teleportReticleTransform.position = hitPoint + teleportReticleOffset;
 
                 shouldTeleport = true;
+            } else {
+                reticle.SetActive(false);
             }
         }
         //Is the trigger held down?

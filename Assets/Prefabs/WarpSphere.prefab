@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4384673210971224}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: dolarr
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36,7 +36,7 @@ GameObject:
   - component: {fileID: 4081591150980986}
   - component: {fileID: 33538293896876200}
   - component: {fileID: 23726922663512946}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: OpenSCAD_Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -54,7 +54,7 @@ GameObject:
   - component: {fileID: 33633662750540798}
   - component: {fileID: 23605643738879012}
   - component: {fileID: 135104697555768748}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: WarpSphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1589750787870356}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 95, y: 18.8, z: -17.7}
+  m_LocalPosition: {x: 13.63, y: 1.298, z: 0.867}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4384673210971224}
@@ -196,5 +196,5 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1
+  m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
