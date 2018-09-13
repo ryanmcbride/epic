@@ -16,12 +16,12 @@ public class TransactionListVertical : MonoBehaviour {
 	}
 
 	public void SetTransactions(List<Transaction> transactions) {
-		foreach (var transaction_rows in _transaction_rows) {
-			Object.Destroy(transaction_rows);
+		foreach (var row in _transaction_rows) {
+			Object.Destroy(row.gameObject);
 		}
 		_transactions = transactions;
 		_transaction_rows = new List<TransactionRow>(transactions.Count);
-		
+
 		float row_height = 2.0f; // transactionRowPrefab.transform.position.height;
     float row_offset = row_height + 0.5f;
     for (int ii = 0; ii < _transactions.Count; ii++) {

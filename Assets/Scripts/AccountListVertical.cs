@@ -26,7 +26,7 @@ public class AccountListVertical : MonoBehaviour {
 
 	public void SetAccounts(List<Account> accounts) {
 		foreach (var row in _account_rows) {
-			Object.Destroy(row);
+			Object.Destroy(row.gameObject);
 		}
 		_accounts = accounts;
 		_account_rows = new List<AccountRow>(accounts.Count);

@@ -163,6 +163,14 @@ public class TransactionManager : MonoBehaviour {
 			}
 		}
 		Debug.Log("Loaded " + _transactions.Count + " Transactions for " + _transactions_by_account.Count + " Accounts");
+
+		foreach (KeyValuePair<string, List<Transaction>> pair in _transactions_by_account){
+			Debug.Log("Account GUID: " + pair.Key);
+			foreach (var transaction in pair.Value) {
+				var json = JsonUtility.ToJson(transaction);
+				Debug.Log("      Transaction: " + json);
+			}
+		}
 		_has_data = true;
 	}
 
