@@ -163,13 +163,13 @@ public class AccountsManager : MonoBehaviour {
   public List<Account> GetAccounts() { return _accounts; }
 
   protected void _FetchData() {
-    Debug.Log("Loading Accounts");
+    //Debug.Log("Loading Accounts");
     var collection = JsonUtility.FromJson<AccountsCollection>(_accounts_json);
     foreach (var a in collection.accounts) {
       var account = JsonUtility.FromJson<Account>(JsonUtility.ToJson(a));
       _accounts.Add(account);
     }
-    Debug.Log("Loaded " + _accounts.Count + " Accounts");
+    //Debug.Log("Loaded " + _accounts.Count + " Accounts");
     _accounts.Sort((x, y) => x.account_type.CompareTo(y.account_type));
     _has_data = true;
   }

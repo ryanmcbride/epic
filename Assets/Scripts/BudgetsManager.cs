@@ -51,7 +51,7 @@ public class BudgetsManager : MonoBehaviour {
 	public List<Budget> GetSubBudgets(string budget_guid) {	return _sub_budgets[budget_guid];	}
 
 	protected void _FetchData() {
-    Debug.Log("Loading Budgets");
+    //Debug.Log("Loading Budgets");
     var collection = JsonUtility.FromJson<BudgetCollection>(_budgets_json);
 		foreach (var b in collection.budgets) {
 			  var budget = JsonUtility.FromJson<Budget>(JsonUtility.ToJson(b));
@@ -65,7 +65,7 @@ public class BudgetsManager : MonoBehaviour {
 					_sub_budgets[key].Add(budget);
 				}
 		}
-    Debug.Log("Loaded " + _budgets.Count + " Budgets");
+    //Debug.Log("Loaded " + _budgets.Count + " Budgets");
   	_has_data = true;
 	}
 

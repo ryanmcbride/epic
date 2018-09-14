@@ -26,7 +26,7 @@ public class BubbleBudget {
 
         BudgetsManager.Budget budget = _budgets[0];
         float max = budget.amount;
-        Debug.Log("Budget Name: " + budget.name);
+        //Debug.Log("Budget Name: " + budget.name);
 
         center = CreateBubble(1.0f, budget);
         if (isSubBudget) {
@@ -44,7 +44,7 @@ public class BubbleBudget {
             float radius = (float)Math.Pow(0.75f * volume / Math.PI, 0.333333f);
             //float scale = radius;
 
-            Debug.Log("Volume: " + volume + " Radius: " + radius + " Budget amount: " + budget.amount + " Max: " + max);
+            //Debug.Log("Volume: " + volume + " Radius: " + radius + " Budget amount: " + budget.amount + " Max: " + max);
             GameObject sub = CreateBubble(radius, budget);
             sub.transform.parent = center.transform;
 
@@ -56,7 +56,7 @@ public class BubbleBudget {
                 float b = previous_magnitude - 1.0f + radius;
                 float c = 1.0f + radius;
                 float angle_b = (float)Math.Acos((c * c + a * a - b * b) / (2.0 * c * a)) + previous_angle;
-                Debug.LogFormat("{0} {1} {2} {3}", a, b, c, angle_b);
+                //Debug.LogFormat("{0} {1} {2} {3}", a, b, c, angle_b);
                 sub.transform.localPosition = new Vector3((float)Math.Cos(angle_b) * magnitude * 0.5f, (float)Math.Sin(angle_b) * magnitude * 0.5f, 0.0f);
                 previous_angle = angle_b;
             }
@@ -262,11 +262,11 @@ public class BudgetSpawner : MonoBehaviour {
         BudgetsManager manager = (BudgetsManager)GameObject.Find("Managers").GetComponent("BudgetsManager");
         manager.Start();
         _budgets = manager.GetBudgets();
-        Debug.Log("FirstBudgetS Name: " + _budgets[0].name + " FirstBudgetS Amount: " + _budgets[0].amount);
-        Debug.Log("SecondBudgetS Name: " + _budgets[1].name + " SecondBudgeS Amount: " + _budgets[1].amount);
+        //Debug.Log("FirstBudgetS Name: " + _budgets[0].name + " FirstBudgetS Amount: " + _budgets[0].amount);
+        //Debug.Log("SecondBudgetS Name: " + _budgets[1].name + " SecondBudgeS Amount: " + _budgets[1].amount);
         //_budgets = JsonUtility.FromJson<BudgetsManager.BudgetCollection>(budgets_json);
-        Debug.LogFormat("{0}", budgets_json);
-        Debug.LogFormat("{0}", "Budget Size:"+_budgets.Count);
+        //Debug.LogFormat("{0}", budgets_json);
+        //Debug.LogFormat("{0}", "Budget Size:"+_budgets.Count);
         _mainBudget = new BubbleBudget(_spawnerPosition, GetBudgets(""), false /* is sub budget */);
     }
 
@@ -274,22 +274,22 @@ public class BudgetSpawner : MonoBehaviour {
         BudgetsManager.Budget[] subset = _budgets.Where( b => (b.parent_guid == parent_guid || b.guid == parent_guid || (parent_guid == "" && b.parent_guid == null)) && b.name != "Income").ToArray();
         Debug.LogFormat("{0}", "Subset Length: "+subset.Length);
         Array.Sort<BudgetsManager.Budget>(subset, (left, right) => right.amount.CompareTo(left.amount));
-        Debug.Log("FirstBudget Name: " + subset[0].name + " FirstBudget Amount: " + subset[0].amount);
-        Debug.Log("SecondBudget Name: " + subset[1].name + " SecondBudget Amount: " + subset[1].amount);
-        Debug.Log("FirstBudgetB Name: " + _budgets[0].name + " FirstBudgetB Amount: " + _budgets[0].amount);
-        Debug.Log("SecondBudgetB Name: " + _budgets[1].name + " SecondBudgetB Amount: " + _budgets[1].amount);
+        //Debug.Log("FirstBudget Name: " + subset[0].name + " FirstBudget Amount: " + subset[0].amount);
+        //Debug.Log("SecondBudget Name: " + subset[1].name + " SecondBudget Amount: " + subset[1].amount);
+        //Debug.Log("FirstBudgetB Name: " + _budgets[0].name + " FirstBudgetB Amount: " + _budgets[0].amount);
+        //Debug.Log("SecondBudgetB Name: " + _budgets[1].name + " SecondBudgetB Amount: " + _budgets[1].amount);
         return subset;
     }
 
     public static void LoginCallback(bool success) {
-        Debug.LogFormat("Logged in? {0}", success);
+        //Debug.LogFormat("Logged in? {0}", success);
         syncModel("budgets", SyncCallback);
     }
 
     // Use this for initialization
     public void Start() {
-        Debug.LogFormat("Start!");
-        Debug.LogFormat("Called sanity_check() => {0}", sanity_check());
+        //Debug.LogFormat("Start!");
+        //Debug.LogFormat("Called sanity_check() => {0}", sanity_check());
         login(USERNAME, PASSWORD, LoginCallback);
         _spawnerPosition = transform.position;
     }
@@ -326,7 +326,7 @@ public class BudgetSpawner : MonoBehaviour {
         _lerp = 0.0f;
         _startPosition = obj.transform.position;
         _startScale = obj.transform.localScale;
-        Debug.Log("GotoSubBudget!!");
+        //Debug.Log("GotoSubBudget!!");
         _subBudget = new BubbleBudget(_spawnerPosition, GetBudgets(budgetData.guid), true /* is sub budget */);
     }
 

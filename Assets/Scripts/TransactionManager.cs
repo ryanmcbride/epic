@@ -149,14 +149,14 @@ public class TransactionManager : MonoBehaviour {
 	}
 
 	protected void _FetchData() {
-		Debug.Log("Loading Transactions");
+		//Debug.Log("Loading Transactions");
 
 		foreach (string json in _getTransactionsJson()) {
 			var collection = JsonUtility.FromJson<TransactionCollection>(json);
 			_AddTransactions(collection.transactions);
 		}
 
-		Debug.Log("Loaded " + _transactions.Count + " Transactions for " + _transactions_by_account.Count + " Accounts");
+		//Debug.Log("Loaded " + _transactions.Count + " Transactions for " + _transactions_by_account.Count + " Accounts");
 
 		// Sort Lists
 		foreach (var pair in _transactions_by_account) {

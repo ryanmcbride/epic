@@ -47,6 +47,8 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	public void Update () {
+		_updateSync();
+		
 		var accounts = accountsManager.GetAccounts();
 
 		if (!_all_data_retrieved && accountsManager.HasData() && transactionManager.HasData() && budgetsManager.HasData()) {
@@ -110,12 +112,12 @@ public class GameManager : MonoBehaviour {
 
 	private void _startSync() {
 		var connectivity = connectivityCheck();
-    Debug.Log("Connectivity Check: " + connectivity.ToString());
-    login("march17", "fdsfds", HandleLogin);
+		Debug.Log("GaneManager: Connectivity Check: " + connectivity.ToString());
+		login("march17", "fdsfds", HandleLogin);
 	}
 
 public static void HandleLogin(bool success) {
-		Debug.Log("login (" + success.ToString() + ")");
+		Debug.Log("GaneManager: login (" + success.ToString() + ")");
 
 		syncModel("accounts", HandleSync);
 		syncModel("budgets", HandleSync);
@@ -126,8 +128,8 @@ public static void HandleLogin(bool success) {
 
 public static void HandleSync(string modelName) {
 		IntPtr models = getModel(modelName);
-		string model_json = Marshal.PtrToStringUTF8(models);
-		Debug.Log("getModel(" + modelName + ") " + model_json);
+		string model_json = Marshal.PtrToStringAnsi(models);
+		Debug.Log("GaneManager: getModel(" + modelName + ") " + model_json);
 
 		//Update Managers
 		if (modelName == "accounts") {
@@ -138,6 +140,17 @@ public static void HandleSync(string modelName) {
 		} else if (modelName == "transactions") {
 		}
 }
+
+private float _timer = 0.0f;
+private void _updateSync() {
+    // Heartbeat every 1 second
+	_timer += Time.deltaTime;
+    if (_timer > 1.0f) {
+		_timer -= 1.0f;
+        update();
+    }
+}
+
 #endregion WINDOWS
 
 #region MAC
