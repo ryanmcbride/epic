@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,7 +18,7 @@ public class Transaction
 		DEBIT  = 2
 	}
 
-	public  enum Status {
+	public enum Status {
 		POSTED  = 1,
 		PENDING = 2
 	}
@@ -138,6 +139,7 @@ public class TransactionManager : MonoBehaviour {
 	}
 
   public bool HasData() { return _has_data; }
+
 	public List<Transaction> GetTransactions(string account_guid) {
 		if(_transactions_by_account.ContainsKey(account_guid)) {
 			return _transactions_by_account[account_guid];	
@@ -148,30 +150,32 @@ public class TransactionManager : MonoBehaviour {
 
 	protected void _FetchData() {
 		Debug.Log("Loading Transactions");
-    // TODO: Revamp this to load a large list of transactions and add functions to compile a list based on Account
 
 		foreach (string json in _getTransactionsJson()) {
 			var collection = JsonUtility.FromJson<TransactionCollection>(json);
-			foreach (var t in collection.transactions) {
-				var transaction = JsonUtility.FromJson<Transaction>(JsonUtility.ToJson(t));
-				string key = transaction.account_guid;
-				if(!_transactions_by_account.ContainsKey(key)) {
-					_transactions_by_account.Add(key, new List<Transaction>());
-				}
-				_transactions_by_account[key].Add(transaction); // Add to list by account GUID
-				_transactions.Add(transaction);									// Add to full transaction list
-			}
+			_AddTransactions(collection.transactions);
 		}
+
 		Debug.Log("Loaded " + _transactions.Count + " Transactions for " + _transactions_by_account.Count + " Accounts");
 
-		foreach (KeyValuePair<string, List<Transaction>> pair in _transactions_by_account){
-			Debug.Log("Account GUID: " + pair.Key);
-			foreach (var transaction in pair.Value) {
-				var json = JsonUtility.ToJson(transaction);
-				Debug.Log("      Transaction: " + json);
-			}
+		// Sort Lists
+		foreach (var pair in _transactions_by_account) {
+		  pair.Value.Sort((x, y) =>  y.date.CompareTo(x.date));
 		}
+		_transactions.Sort((x, y) =>  y.date.CompareTo(x.date));
 		_has_data = true;
+	}
+
+	protected void _AddTransactions(Transaction[] transactions) {
+		foreach (var trans in transactions) {
+			var transaction = JsonUtility.FromJson<Transaction>(JsonUtility.ToJson(trans));
+			string key = transaction.account_guid;
+			if(!_transactions_by_account.ContainsKey(key)) {
+				_transactions_by_account.Add(key, new List<Transaction>());
+			}
+			_transactions_by_account[key].Add(transaction); // Add to list by account GUID, this makes lookup easier at the cost of memory
+			_transactions.Add(transaction);									// Add to full transaction list
+		}
 	}
 
   protected string[] _getTransactionsJson() {

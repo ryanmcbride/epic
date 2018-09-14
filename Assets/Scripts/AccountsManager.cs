@@ -159,7 +159,7 @@ public class AccountsManager : MonoBehaviour {
   }
 
   public bool HasData() { return _has_data; }
-  
+
   public List<Account> GetAccounts() { return _accounts; }
 
   protected void _FetchData() {
@@ -170,6 +170,7 @@ public class AccountsManager : MonoBehaviour {
       _accounts.Add(account);
     }
     Debug.Log("Loaded " + _accounts.Count + " Accounts");
+    _accounts.Sort((x, y) => x.account_type.CompareTo(y.account_type));
     _has_data = true;
   }
 
