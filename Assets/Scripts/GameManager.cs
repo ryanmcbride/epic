@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour {
@@ -12,6 +15,8 @@ public class GameManager : MonoBehaviour {
 
 	// Use this for initialization
 	public void Start () {
+		_startSync();
+
 		if (accountsManager == null) {
 			accountsManager = (AccountsManager)FindObjectOfType(typeof(AccountsManager));
 			if (accountsManager == null) {
@@ -71,6 +76,75 @@ public class GameManager : MonoBehaviour {
 			}
 		}
 	}
+
+#region SYNC
+	public enum SyncStatus {
+		NOT_STARTED     = 0,
+		SYNCING         = 1,
+		SYNC_COMPLETE   = 2,
+		SYNC_FAIL 			= 3
+	}
+
+#region WINDOWS
+
+	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+	public delegate void LoginDelegate(bool success);
+
+	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+	public delegate void SyncDelegate(string model);
+
+	[DllImport("moneymobilex_unity")]
+	private static extern int connectivityCheck();
+
+	[DllImport("moneymobilex_unity")]
+	private static extern void login(string username, string password, [MarshalAs(UnmanagedType.FunctionPtr)]LoginDelegate functionCallback);
+
+	[DllImport("moneymobilex_unity")]
+	private static extern IntPtr getModel(string modelJson);
+
+	[DllImport("moneymobilex_unity")]
+	private static extern void syncModel(string modelName, [MarshalAs(UnmanagedType.FunctionPtr)]SyncDelegate functionCallback);
+
+	[DllImport("moneymobilex_unity")]
+	private static extern void update();
+
+	private void _startSync() {
+		var connectivity = connectivityCheck();
+    Debug.Log("Connectivity Check: " + connectivity.ToString());
+    login("march17", "fdsfds", HandleLogin);
+	}
+
+public static void HandleLogin(bool success) {
+		Debug.Log("login (" + success.ToString() + ")");
+
+		syncModel("accounts", HandleSync);
+		syncModel("budgets", HandleSync);
+		syncModel("categories", HandleSync);
+		syncModel("members", HandleSync);
+		syncModel("transactions", HandleSync);
+}
+
+public static void HandleSync(string modelName) {
+		IntPtr models = getModel(modelName);
+		string model_json = Marshal.PtrToStringUTF8(models);
+		Debug.Log("getModel(" + modelName + ") " + model_json);
+
+		//Update Managers
+		if (modelName == "accounts") {
+      //accountsManage
+		} else if (modelName == "budgets") {
+		} else if (modelName == "categories") {
+		} else if (modelName == "members") {
+		} else if (modelName == "transactions") {
+		}
+}
+#endregion WINDOWS
+
+#region MAC
+
+#endregion MAC
+
+#endregion SYNC
 
 	private bool _all_data_retrieved = false;
 
