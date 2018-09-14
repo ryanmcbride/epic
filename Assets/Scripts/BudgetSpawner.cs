@@ -5,8 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-public class BubbleBudget
-{
+public class BubbleBudget {
     private static float CENTER_MASS = 1000.0f;
     private static float CENTER_HEIGHT = 1.3f;
     private static float ALPHA = 150.0f / 255.0f;
@@ -15,34 +14,31 @@ public class BubbleBudget
     private static float INITIAL_TORQUE_Y = 10.0f;
     private static float DRAG = 30.0f;
 
-    private List<GameObject> spheres;
-    private List<GameObject> icons;
-    private Vector3 spawnerPosition;
+    private List<GameObject> _spheres;
+    private List<GameObject> _icons;
+    private Vector3 _spawnerPosition;
     public GameObject center;
 
-    public BubbleBudget(Vector3 parentPosition, BudgetsManager.Budget[] budgets, bool isSubBudget)
-    {
-        spawnerPosition = parentPosition;
-        icons = new List<GameObject>();
-        spheres = new List<GameObject>();
+    public BubbleBudget(Vector3 parentPosition, BudgetsManager.Budget[] _budgets, bool isSubBudget) {
+        _spawnerPosition = parentPosition;
+        _icons = new List<GameObject>();
+        _spheres = new List<GameObject>();
 
-        BudgetsManager.Budget budget = budgets[0];
+        BudgetsManager.Budget budget = _budgets[0];
         float max = budget.amount;
         Debug.Log("Budget Name: " + budget.name);
 
         center = CreateBubble(1.0f, budget);
-        if (isSubBudget)
-        {
+        if (isSubBudget) {
             center.GetComponent<MeshRenderer>().material.color = new Color(1.0f, 1.0f, 1.0f, ALPHA);
         }
-        center.transform.position = new Vector3(spawnerPosition.x, spawnerPosition.y + CENTER_HEIGHT, spawnerPosition.z);
+        center.transform.position = new Vector3(_spawnerPosition.x, _spawnerPosition.y + CENTER_HEIGHT, _spawnerPosition.z);
 
         float previous_magnitude = 0.0f;
         float previous_angle = (float)(Math.PI * 0.5f); // 90 degrees (or up)
 
-        for (int i = 1; i < budgets.Length; ++i)
-        {
-            budget = budgets[i];
+        for (int i = 1; i < _budgets.Length; ++i) {
+            budget = _budgets[i];
 
             float volume = UNIT_SPHERE_VOLUME * (budget.amount / max);
             float radius = (float)Math.Pow(0.75f * volume / Math.PI, 0.333333f);
@@ -53,12 +49,9 @@ public class BubbleBudget
             sub.transform.parent = center.transform;
 
             float magnitude = (1.0f + radius);
-            if (i == 1)
-            {
+            if (i == 1) {
                 sub.transform.localPosition = Vector3.up * magnitude * 0.5f;
-            }
-            else
-            {
+            } else {
                 float a = previous_magnitude;
                 float b = previous_magnitude - 1.0f + radius;
                 float c = 1.0f + radius;
@@ -79,24 +72,19 @@ public class BubbleBudget
         }
     }
 
-    public void SetActive(bool active)
-    {
+    public void SetActive(bool active) {
         center.SetActive(active);
     }
 
-    private GameObject CreateBubble(float scale, BudgetsManager.Budget budget)
-    {
+    private GameObject CreateBubble(float scale, BudgetsManager.Budget budget) {
         double percent_spent = budget.transaction_total / budget.amount;
 
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         sphere.GetComponent<MeshRenderer>().material = (Material)Resources.Load("Materials/TranslucentGreen", typeof(Material));
         Color color = Color.green;
-        if (percent_spent >= 0.8f)
-        {
+        if (percent_spent >= 0.8f) {
             color = Color.red;
-        }
-        else if (percent_spent > 0.6f)
-        {
+        } else if (percent_spent > 0.6f) {
             color = Color.yellow;
         }
         color.a = ALPHA;
@@ -131,8 +119,8 @@ public class BubbleBudget
         textGameObject.transform.localPosition = new Vector3(0.0f, 0.0f, 4.0f);
         textGameObject.SetActive(false);
 
-        icons.Add(plane);
-        spheres.Add(sphere);
+        _icons.Add(plane);
+        _spheres.Add(sphere);
 
         BudgetData budgetData = sphere.AddComponent<BudgetData>() as BudgetData;
         budgetData.display = string.Format("{0} - ${1} / ${2}", budget.name, budget.transaction_total, budget.amount);
@@ -143,26 +131,22 @@ public class BubbleBudget
     }
 
     // Update is called once per frame
-    public void Update(GameObject colliding)
-    {
+    public void Update(GameObject _colliding) {
         // Slowly oscillate the central budget up & down and around
-        if (center)
-        {
+        if (center) {
             center.transform.Rotate(0, 2.0f /* rpm */ * Time.deltaTime, 0);
         }
 
         // Billboard the icons
-        foreach (GameObject icon in icons)
-        {
+        foreach (GameObject icon in _icons) {
             icon.transform.LookAt(Camera.main.transform.position, Vector3.up);
             icon.transform.Rotate(new Vector3(90, 0, 0), Space.Self);
             GameObject text = icon.transform.GetChild(0).gameObject;
             text.SetActive(false);
         }
 
-        foreach (GameObject sphere in spheres)
-        {
-            float scale = sphere == colliding ? 1.7f : 1.5f;
+        foreach (GameObject sphere in _spheres) {
+            float scale = sphere == _colliding ? 1.7f : 1.5f;
 
             GameObject textObject = sphere.transform.GetChild(0).transform.GetChild(0).gameObject;
             textObject.SetActive(true);
@@ -173,17 +157,14 @@ public class BubbleBudget
         }
     }
 
-    public void Animate(Vector3 start, Vector3 startScale, float t)
-    {
+    public void Animate(Vector3 start, Vector3 _startScale, float t) {
         float t2 = 1.0f + (--t) * t * t * t * t;
-        center.transform.position = Vector3.Lerp(start, new Vector3(spawnerPosition.x, spawnerPosition.y + CENTER_HEIGHT, spawnerPosition.z), t2);
-        center.transform.localScale = Vector3.Lerp(startScale, new Vector3(1.0f, 1.0f, 1.0f), t2);
+        center.transform.position = Vector3.Lerp(start, new Vector3(_spawnerPosition.x, _spawnerPosition.y + CENTER_HEIGHT, _spawnerPosition.z), t2);
+        center.transform.localScale = Vector3.Lerp(_startScale, new Vector3(1.0f, 1.0f, 1.0f), t2);
     }
 
-    private string CategoryGuidToTextureName(string category_guid)
-    {
-        switch (category_guid)
-        {
+    private string CategoryGuidToTextureName(string category_guid) {
+        switch (category_guid) {
             case "CAT-7829f71c-2e8c-afa5-2f55-fa3634b89874": return "auto";
             case "CAT-79b02f2f-2adc-88f0-ac2b-4e71ead9cfc8": return "utilities";
             case "CAT-94b11142-e97b-941a-f67f-6e18d246a23f": return "business";
@@ -210,82 +191,14 @@ public class BubbleBudget
     }
 }
 
-//[System.Serializable]
-//public class BudgetsCollection
-//{
-//    public Budget[] budgets;
-//}
-
-//[System.Serializable]
-//public class Budget
-//{
-//    public float amount;
-//    public float transaction_total;
-//    public string guid;
-//    public string category_guid;
-//    public string parent_guid;
-//    public string name;
-//}
-
-// [System.Serializable]
-// public class AccountsCollection
-// {
-//     public Account[] items;
-// }
-
-// [System.Serializable]
-// public class Account
-// {
-//     public string account_subtype;
-//     public int account_type;
-//     public float apr;
-//     public float apy;
-//     public float available_balance;
-//     public float available_credit;
-//     public float balance;
-//     public bool is_closed;
-//     public float credit_limit;
-//     public string day_payment_is_due;
-//     public string external_guid;
-//     public int feed_account_type;
-//     public float feed_apr;
-//     public float feed_apy;
-//     public string guid;
-//     public bool has_monthly_transfer_limit;
-//     public string institution_guid;
-//     public float interest_rate;
-//     public bool is_hidden;
-//     public bool is_manual;
-//     public bool is_personal;
-//     public string matures_on;
-//     public string member_guid;
-//     public bool member_is_managed_by_user;
-//     public float minimum_balance;
-//     public int monthly_transfer_count;
-//     public string name;
-//     public string nickname;
-//     public float original_balance;
-//     public float payoff_balance;
-//     public float pending_balance;
-//     public string property_type;
-//     public int revision;
-//     public string started_on;
-//     public float statement_balance;
-//     public string user_guid;
-//     public float minimum_payment;
-//     public string payment_due_at;
-// }
-
 // "User data" that gets attached to a bubble
-public class BudgetData : MonoBehaviour
-{
+public class BudgetData : MonoBehaviour {
     public string display;
     public string guid;
     public string category_guid;
 }
 
-public class BudgetSpawner : MonoBehaviour
-{
+public class BudgetSpawner : MonoBehaviour {
 
 //  Windows dll ties.
 
@@ -327,20 +240,19 @@ public class BudgetSpawner : MonoBehaviour
         //do nothing
     }
 
-    private static BubbleBudget mainBudget;
-    private static BubbleBudget subBudget;
-    private static List<BudgetsManager.Budget> budgets;
-    private static Vector3 spawnerPosition;
+    private static Vector3 _spawnerPosition;
+    private static BubbleBudget _mainBudget;
+    private static BubbleBudget _subBudget;
+    private static List<BudgetsManager.Budget> _budgets;
     private static string USERNAME = "march17";
     private static string PASSWORD = "anypass";
-    private static int nextUpdate = 1;
-    private static float lerp = 1.0f;
-    private static Vector3 startScale;
-    private static Vector3 startPosition;
-    private static GameObject colliding;
+    private static int _nextUpdate = 1;
+    private static float _lerp = 1.0f;
+    private static Vector3 _startScale;
+    private static Vector3 _startPosition;
+    private static GameObject _colliding;
 
-    public static void SyncCallback()
-    {
+    public static void SyncCallback() {
         // Windows code
         // IntPtr budgets_ptr = getModel("budgets");
         // string budgets_json = Marshal.PtrToStringAnsi(budgets_ptr);
@@ -349,92 +261,81 @@ public class BudgetSpawner : MonoBehaviour
         string budgets_json = getModel("budgets");
         BudgetsManager manager = (BudgetsManager)GameObject.Find("Managers").GetComponent("BudgetsManager");
         manager.Start();
-        budgets = manager.GetBudgets();
-        Debug.Log("FirstBudgetS Name: " + budgets[0].name + " FirstBudgetS Amount: " + budgets[0].amount);
-        Debug.Log("SecondBudgetS Name: " + budgets[1].name + " SecondBudgeS Amount: " + budgets[1].amount);
-        //budgets = JsonUtility.FromJson<BudgetsManager.BudgetCollection>(budgets_json);
-
+        _budgets = manager.GetBudgets();
+        Debug.Log("FirstBudgetS Name: " + _budgets[0].name + " FirstBudgetS Amount: " + _budgets[0].amount);
+        Debug.Log("SecondBudgetS Name: " + _budgets[1].name + " SecondBudgeS Amount: " + _budgets[1].amount);
+        //_budgets = JsonUtility.FromJson<BudgetsManager.BudgetCollection>(budgets_json);
         Debug.LogFormat("{0}", budgets_json);
-        Debug.LogFormat("{0}", "Budget Size:"+budgets.Count);
-        mainBudget = new BubbleBudget(spawnerPosition, GetBudgets(""), false /* is sub budget */);
+        Debug.LogFormat("{0}", "Budget Size:"+_budgets.Count);
+        _mainBudget = new BubbleBudget(_spawnerPosition, GetBudgets(""), false /* is sub budget */);
     }
 
-    public static BudgetsManager.Budget[] GetBudgets(string parent_guid)
-    {
-        BudgetsManager.Budget[] subset = budgets.Where( b => (b.parent_guid == parent_guid || b.guid == parent_guid || (parent_guid == "" && b.parent_guid == null)) && b.name != "Income").ToArray();
+    public static BudgetsManager.Budget[] GetBudgets(string parent_guid) {
+        BudgetsManager.Budget[] subset = _budgets.Where( b => (b.parent_guid == parent_guid || b.guid == parent_guid || (parent_guid == "" && b.parent_guid == null)) && b.name != "Income").ToArray();
         Debug.LogFormat("{0}", "Subset Length: "+subset.Length);
         Array.Sort<BudgetsManager.Budget>(subset, (left, right) => right.amount.CompareTo(left.amount));
         Debug.Log("FirstBudget Name: " + subset[0].name + " FirstBudget Amount: " + subset[0].amount);
         Debug.Log("SecondBudget Name: " + subset[1].name + " SecondBudget Amount: " + subset[1].amount);
-        Debug.Log("FirstBudgetB Name: " + budgets[0].name + " FirstBudgetB Amount: " + budgets[0].amount);
-        Debug.Log("SecondBudgetB Name: " + budgets[1].name + " SecondBudgetB Amount: " + budgets[1].amount);
+        Debug.Log("FirstBudgetB Name: " + _budgets[0].name + " FirstBudgetB Amount: " + _budgets[0].amount);
+        Debug.Log("SecondBudgetB Name: " + _budgets[1].name + " SecondBudgetB Amount: " + _budgets[1].amount);
         return subset;
     }
 
-    public static void LoginCallback(bool success)
-    {
+    public static void LoginCallback(bool success) {
         Debug.LogFormat("Logged in? {0}", success);
         syncModel("budgets", SyncCallback);
     }
 
     // Use this for initialization
-    public void Start()
-    {
+    public void Start() {
         Debug.LogFormat("Start!");
         Debug.LogFormat("Called sanity_check() => {0}", sanity_check());
         login(USERNAME, PASSWORD, LoginCallback);
-        spawnerPosition = this.gameObject.transform.position;
+        _spawnerPosition = transform.position;
     }
 
     // Update is called once per frame
-    public void Update()
-    {
-        if (mainBudget != null) { mainBudget.Update(colliding); }
-        if (subBudget != null)
-        {
-            lerp += Time.deltaTime * 2.0f;
-            if (lerp > 1.0f) lerp = 1.0f;
+    public void Update() {
+        if (_mainBudget != null) { _mainBudget.Update(_colliding); }
+        if (_subBudget != null) {
+            _lerp += Time.deltaTime * 2.0f;
+            if (_lerp > 1.0f) _lerp = 1.0f;
 
-            subBudget.Animate(startPosition, startScale, lerp);
-            subBudget.Update(colliding);
+            _subBudget.Animate(_startPosition, _startScale, _lerp);
+            _subBudget.Update(_colliding);
         }
 
         // Heartbeat every 1 second
-        if (Time.time >= nextUpdate)
-        {
-            nextUpdate = Mathf.FloorToInt(Time.time) + 1;
+        if (Time.time >= _nextUpdate) {
+            _nextUpdate = Mathf.FloorToInt(Time.time) + 1;
             heartbeat();
         }
     }
 
-    public static void GotoMainBudget()
-    {
-        if (subBudget != null) subBudget.SetActive(false);
-        if (mainBudget != null) mainBudget.SetActive(true);
-        subBudget = null;
+    public static void GotoMainBudget() {
+        if (_subBudget != null) _subBudget.SetActive(false);
+        if (_mainBudget != null) _mainBudget.SetActive(true);
+        _subBudget = null;
     }
 
-    public static void GotoSubBudget(GameObject obj)
-    {
-        if (subBudget != null) return; /* already in sub-budget */
+    public static void GotoSubBudget(GameObject obj) {
+        if (_subBudget != null) return; /* already in sub-budget */
 
         BudgetData budgetData = obj.GetComponent<BudgetData>() as BudgetData;
-        mainBudget.SetActive(false);
-        lerp = 0.0f;
-        startPosition = obj.transform.position;
-        startScale = obj.transform.localScale;
+        _mainBudget.SetActive(false);
+        _lerp = 0.0f;
+        _startPosition = obj.transform.position;
+        _startScale = obj.transform.localScale;
         Debug.Log("GotoSubBudget!!");
-        subBudget = new BubbleBudget(spawnerPosition, GetBudgets(budgetData.guid), true /* is sub budget */);
+        _subBudget = new BubbleBudget(_spawnerPosition, GetBudgets(budgetData.guid), true /* is sub budget */);
     }
 
-    public static void BudgetBlur()
-    {
-        colliding = null;
+    public static void BudgetBlur() {
+        _colliding = null;
     }
 
-    public static void BudgetHover(GameObject obj)
-    {
-        colliding = obj;
+    public static void BudgetHover(GameObject obj) {
+        _colliding = obj;
     }
 
     private static string budget_json = "{\"budgets\":[{\"budget\": {\"id\": 1, \"amount\": 16, \"category_guid\": \"CAT-7cccbafa-87d7-c9a6-661b-8b3402fe9e78\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-1e0e7bb2-0af8-0a69-02cd-8b7350000096\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Pets\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 2, \"amount\": 134, \"category_guid\": \"CAT-8edf9663-623e-4735-490e-31288f0a70b0\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-d3e113a0-325f-7a26-83da-07dbf6dfa545\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Gifts & Donations\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 3, \"amount\": 98, \"category_guid\": \"CAT-bf5c9cca-c96b-b50d-440d-38d9adfda5b0\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-ecded965-1ad6-4e1c-80d8-b586d791f11d\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Education\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 4, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 4, \"amount\": 4, \"category_guid\": \"CAT-94b11142-e97b-941a-f67f-6e18d246a23f\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-5504874a-ddd3-5871-0b3a-8016eb4f1603\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Business Services\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 5, \"amount\": 140, \"category_guid\": \"CAT-79b02f2f-2adc-88f0-ac2b-4e71ead9cfc8\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-6bad8f8c-c4a3-3370-f3e8-eb79f1a02dd5\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Bills & Utilities\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 6, \"amount\": 3, \"category_guid\": \"CAT-d73ee74b-13a4-ac3e-4015-fc4ba9a62b2a\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-63720105-8756-6de4-2803-6216a9ee578c\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Fees & Charges\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 7, \"amount\": 0, \"category_guid\": \"CAT-ddc9b8e0-a9a1-e31e-a467-2c33e553afd9\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-936c1a24-a0db-4013-3020-17f5a933b8a9\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Home Improvement\", \"parent_guid\": \"BGT-f5843ce5-233f-5dc6-42ec-1cae407bf1e0\", \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 8, \"amount\": 183, \"category_guid\": \"CAT-6c7de3f8-de6c-7061-1dd2-b093044014bf\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-2ddfe567-7f06-ff79-d2cf-ee9976f96cac\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Financial\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 9, \"amount\": 0, \"category_guid\": \"CAT-ee48b740-c981-778b-3c02-04540dec0262\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-e6b04675-5d84-6db8-1af6-5be0d4f7eade\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Dentist\", \"parent_guid\": \"BGT-d484079f-af3b-192a-2413-ea91165681d4\", \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 10, \"amount\": 253, \"category_guid\": \"CAT-ea23d844-cbd1-eb10-f6ac-0df9610e59ae\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-c503f94d-1d06-849f-4e03-d4c3ce58ee17\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Travel\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 2, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 11, \"amount\": 0, \"category_guid\": \"CAT-e671e3a1-b7cb-f0a9-ac6e-bc4632245c31\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-6852bcec-c437-946e-34b4-93591cbd1ed9\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Home Supplies\", \"parent_guid\": \"BGT-f5843ce5-233f-5dc6-42ec-1cae407bf1e0\", \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 12, \"amount\": 134, \"category_guid\": \"CAT-aad51b46-d6f7-3da5-fd6e-492328b3023f\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-3a98bb41-610d-fe22-a334-e8953631d083\", \"is_deleted\": null, \"is_exceeded\": false,"+
