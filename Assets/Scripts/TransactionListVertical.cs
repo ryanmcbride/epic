@@ -6,6 +6,13 @@ public class TransactionListVertical : MonoBehaviour {
 
   public TransactionRow transactionRowPrefab;
 
+	public float rowYHeight = 2.0f;
+	public float rowYSpacer = 0.5f;
+	public float rowXOffset = 0.25f;
+	public float rowAnimationDelay = 0.1f;
+	public float rowAnimationTime = 0.1f;
+  public iTween.EaseType rowAnimationEaseType = iTween.EaseType.easeOutCubic;
+
 	// Use this for initialization
 	public void Start () {
 		_transactions = new List<Transaction>();
@@ -22,15 +29,26 @@ public class TransactionListVertical : MonoBehaviour {
 		_transactions = transactions;
 		_transaction_rows = new List<TransactionRow>(transactions.Count);
 
-		float row_height = 2.0f; // transactionRowPrefab.transform.position.height;
-    float row_offset = row_height + 0.5f;
+    float row_offset = rowYHeight + rowYSpacer;
     for (int ii = 0; ii < _transactions.Count; ii++) {
-			var rot = transform.rotation;
-				var transaction_row = Object.Instantiate(transactionRowPrefab, transform.position, rot, transform);
-				transaction_row.transform.localPosition = new Vector3(0.0f, -row_offset * (ii + 1), 0.0f);
-				// TODO: Animate rows into place
-				transaction_row.SetTransaction(_transactions[ii]);
-				_transaction_rows.Add(transaction_row);
+			if (ii == 0) {
+				var row = Object.Instantiate(transactionRowPrefab, transform.position, transform.rotation, transform);
+				row.transform.localPosition = new Vector3(0.0f, -row_offset, 0.0f);
+				row.SetTransaction(_transactions[ii]);
+				_transaction_rows.Add(row);
+			} else {
+				var xForm = _transaction_rows[ii - 1].transform;
+				var row = Object.Instantiate(transactionRowPrefab, xForm.position, xForm.rotation, xForm);
+				row.transform.localPosition = new Vector3(-rowXOffset, 0.0f, 0.0f);
+				iTween.MoveBy(row.gameObject,
+											iTween.Hash("x", rowXOffset * xForm.lossyScale.x,
+																	"y", -row_offset * xForm.lossyScale.y,
+																	"time", rowAnimationTime,
+																	"easetype", rowAnimationEaseType,
+																	"delay", rowAnimationDelay * ii));
+				row.SetTransaction(_transactions[ii]);
+				_transaction_rows.Add(row);
+			}
 		}
 	}
 

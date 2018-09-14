@@ -5,6 +5,12 @@ using UnityEngine;
 public class AccountListVertical : MonoBehaviour {
 
   public AccountRow accountRowPrefab;
+	public float rowYHeight = 2.0f;
+	public float rowYSpacer = 0.5f;
+	public float rowXOffset = 0.25f;
+	public float rowAnimationDelay = 0.1f;
+	public float rowAnimationTime = 0.1f;
+  public iTween.EaseType rowAnimationEaseType = iTween.EaseType.easeOutCubic;
 
 	// Use this for initialization
 	public void Start () {
@@ -30,15 +36,27 @@ public class AccountListVertical : MonoBehaviour {
 		}
 		_accounts = accounts;
 		_account_rows = new List<AccountRow>(accounts.Count);
-		float row_height = 2.0f; // accountRowPrefab.transform.boundingBox.height;
-    float row_offset = row_height + 0.5f;
+		
+    float row_offset = rowYHeight + rowYSpacer;
     for (int ii = 0; ii < _accounts.Count; ii++) {
-			var rot = transform.rotation;
-				var account_row = Object.Instantiate(accountRowPrefab, transform.position, rot, transform);
-				account_row.transform.localPosition = new Vector3(0.0f, -row_offset * (ii + 1), 0.0f);
-				// TODO: Animate rows into place
-				account_row.SetAccount(_accounts[ii]);
-				_account_rows.Add(account_row);
+			if (ii == 0) {
+				var row = Object.Instantiate(accountRowPrefab, transform.position, transform.rotation, transform);
+				row.transform.localPosition = new Vector3(0.0f, -row_offset, 0.0f);
+				row.SetAccount(_accounts[ii]);
+				_account_rows.Add(row);
+			} else {
+				var xForm = _account_rows[ii - 1].transform;
+				var row = Object.Instantiate(accountRowPrefab, xForm.position, xForm.rotation, xForm);
+				row.transform.localPosition = new Vector3(-rowXOffset, 0.0f, 0.0f);
+				iTween.MoveBy(row.gameObject,
+											iTween.Hash("x", rowXOffset * xForm.lossyScale.x,
+																	"y", -row_offset * xForm.lossyScale.y,
+																	"time", rowAnimationTime,
+																	"easetype", rowAnimationEaseType,
+																	"delay", rowAnimationDelay * ii));
+				row.SetAccount(_accounts[ii]);
+				_account_rows.Add(row);
+			}
 		}
 	}
 
