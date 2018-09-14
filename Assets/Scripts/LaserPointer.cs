@@ -83,10 +83,6 @@ public class LaserPointer : MonoBehaviour
                 teleportReticleTransform.position = hitPoint + teleportReticleOffset;
 
                 shouldTeleport = true;
-            } else if(Physics.Raycast(trackedObj.transform.position, transform.forward, out hit, 100)) {
-                ShowLaser(hit);
-                shouldTeleport = false;
-                reticle.SetActive(false);
             } else {
                 laser.SetActive(false);
                 reticle.SetActive(false);
@@ -106,10 +102,6 @@ public class LaserPointer : MonoBehaviour
 
                 shouldWarp = true;
 
-            } else if(Physics.Raycast(trackedObj.transform.position, transform.forward, out hit, 100)) {
-                ShowLaser(hit);
-                shouldTeleport = false;
-                reticle.SetActive(false);
             } else {
                 laser.SetActive(false);
                 reticle.SetActive(false);
