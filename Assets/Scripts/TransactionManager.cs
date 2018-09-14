@@ -134,11 +134,11 @@ public class TransactionManager : MonoBehaviour {
 		_transactions = new List<Transaction>();
 		_transactions_by_account = new SortedDictionary<string, List<Transaction>>();
 
-		_fetch_data();
+		_FetchData();
 	}
 
-  public bool hasData() { return _has_data; }
-	public List<Transaction> getTransactions(string account_guid) {
+  public bool HasData() { return _has_data; }
+	public List<Transaction> GetTransactions(string account_guid) {
 		if(_transactions_by_account.ContainsKey(account_guid)) {
 			return _transactions_by_account[account_guid];	
 		} else {
@@ -146,7 +146,7 @@ public class TransactionManager : MonoBehaviour {
 		}
 	}
 
-	protected void _fetch_data() {
+	protected void _FetchData() {
 		Debug.Log("Loading Transactions");
     // TODO: Revamp this to load a large list of transactions and add functions to compile a list based on Account
 

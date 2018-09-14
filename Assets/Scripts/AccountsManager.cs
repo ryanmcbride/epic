@@ -155,13 +155,14 @@ public class AccountsManager : MonoBehaviour {
 
   public void Start () {
     _accounts = new List<Account>();
-    _fetch_data();
+    _FetchData();
   }
 
-  public bool hasData() { return _has_data; }
-  public List<Account> getAccounts() { return _accounts; }
+  public bool HasData() { return _has_data; }
+  
+  public List<Account> GetAccounts() { return _accounts; }
 
-  protected void _fetch_data() {
+  protected void _FetchData() {
     Debug.Log("Loading Accounts");
     var collection = JsonUtility.FromJson<AccountsCollection>(_accounts_json);
     foreach (var a in collection.accounts) {

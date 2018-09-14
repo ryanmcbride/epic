@@ -18,9 +18,9 @@ public class AccountListVertical : MonoBehaviour {
 
 	public void Update () {
 		// Wait until the Manager has Loaded Data
-		if(_dirty && _accounts_manager.getAccounts().Count > 0) {
+		if(_dirty && _accounts_manager.GetAccounts().Count > 0) {
 			_dirty = false;
-			SetAccounts(_accounts_manager.getAccounts());
+			SetAccounts(_accounts_manager.GetAccounts());
 		}
 	}
 

@@ -43,14 +43,14 @@ public class BudgetsManager : MonoBehaviour {
 		_budgets = new List<Budget>();
 		_sub_budgets = new SortedDictionary<string, List<Budget>>();
 
-		_fetch_data();
+		_FetchData();
 }
 
-	public bool hasData() { return _has_data; }
+	public bool HasData() { return _has_data; }
 	public List<Budget> GetBudgets() { return _budgets;	}
 	public List<Budget> GetSubBudgets(string budget_guid) {	return _sub_budgets[budget_guid];	}
 
-	protected void _fetch_data() {
+	protected void _FetchData() {
     Debug.Log("Loading Budgets");
     var collection = JsonUtility.FromJson<BudgetCollection>(_budgets_json);
 		foreach (var b in collection.budgets) {

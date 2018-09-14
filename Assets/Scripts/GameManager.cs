@@ -42,11 +42,10 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	public void Update () {
-		var accounts = accountsManager.getAccounts();
+		var accounts = accountsManager.GetAccounts();
 
-		if (!_all_data_retrieved && accountsManager.hasData() && transactionManager.hasData() && budgetsManager.hasData()) {
+		if (!_all_data_retrieved && accountsManager.HasData() && transactionManager.HasData() && budgetsManager.HasData()) {
 			_all_data_retrieved = true;
-			Debug.Log("GameManager: Finished Retrieving Data");
 			// Poplulate data to the displayed elements in the scene
 			if (accountListVertical != null) {
         accountListVertical.SetAccounts(accounts);
@@ -60,12 +59,12 @@ public class GameManager : MonoBehaviour {
 			if (_account_select_current  > _account_select_delay) {
 				_account_select_current -= _account_select_delay;
 				var account = accounts[_account_select_index];
-				Debug.Log("Select Account " + account.name + " (" + _account_select_index + ") + " + account.guid);
+				// Debug.Log("Select Account " + account.name + " (" + _account_select_index + ") + " + account.guid);
 				if (accountListVertical != null) {
 					accountListVertical.SelectAccount(_account_select_index);
 				}
 				if (transactionListVertical != null) {
-					var transactions = transactionManager.getTransactions(account.guid);
+					var transactions = transactionManager.GetTransactions(account.guid);
 					transactionListVertical.SetTransactions(transactions);
 				}
 				_account_select_index = ++_account_select_index %  accounts.Count;
