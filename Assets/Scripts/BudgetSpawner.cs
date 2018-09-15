@@ -219,11 +219,15 @@ public class BudgetSpawner : MonoBehaviour {
     }
 
     public void Start() {
-        _budgetsManager = (BudgetsManager)FindObjectOfType(typeof(BudgetsManager));
-        _spawnerPosition = transform.position;
     }
 
     public void Update() {
+        if(_budgetsManager == null) {
+            _budgetsManager = (BudgetsManager)FindObjectOfType(typeof(BudgetsManager));
+            _spawnerPosition = transform.position;
+            return;
+        }
+
         if(_dirty && _budgetsManager.HasData()) {
             _dirty = false;
             _budgets = _budgetsManager.GetBudgets();

@@ -17,9 +17,6 @@ public class Spending
 
 public class SpendingManager : MonoBehaviour {
 	void Start () {
-		_income = new Spending();
-		_ordered_spending = new List<Spending>();
-		_spending_by_category = new SortedDictionary<string, Spending>();
 	}
 
   public bool HasData() { return _has_data; }
@@ -29,7 +26,7 @@ public class SpendingManager : MonoBehaviour {
 	}
 
   public Spending GetSpendingCategory(string category_guid) {
-		if (_spending_by_category.ContainsKey(category_guid)) {
+		if (_spending_by_category != null && _spending_by_category.ContainsKey(category_guid)) {
 			return _spending_by_category[category_guid];
 		}
 		return new Spending();
@@ -43,6 +40,10 @@ public class SpendingManager : MonoBehaviour {
 	}
 
 	public void AddTransactions(Transaction[] transactions, bool final_page) {
+		if(_spending_by_category == null)	_spending_by_category = new SortedDictionary<string, Spending>();
+		if(_ordered_spending == null) _ordered_spending = new List<Spending>();
+		if(_income == null)	_income = new Spending();
+
 		foreach (var trans in transactions) {
 			var transaction = JsonUtility.FromJson<Transaction>(JsonUtility.ToJson(trans));
 
