@@ -132,8 +132,6 @@ public class TransactionManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		_transactions = new List<Transaction>();
-		_transactions_by_account = new SortedDictionary<string, List<Transaction>>();
 	}
 
   public bool HasData() { return _has_data; }
@@ -155,7 +153,15 @@ public class TransactionManager : MonoBehaviour {
 		AddTransactions(transactions, true);
 	}
 	
+	// Add a `page` of Transactions
 	public void AddTransactions(Transaction[] transactions, bool final_page) {
+		if(transactions == null) {
+			Debug.Assert(false, "Invalid Transactions");
+			return;
+		}
+		if(_transactions == null)	_transactions = new List<Transaction>();
+		if(_transactions_by_account == null) _transactions_by_account = new SortedDictionary<string, List<Transaction>>();
+
 		foreach (var trans in transactions) {
 			var transaction = JsonUtility.FromJson<Transaction>(JsonUtility.ToJson(trans));
 			string key = transaction.account_guid;

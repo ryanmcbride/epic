@@ -219,24 +219,24 @@ public class BudgetSpawner : MonoBehaviour {
     }
 
     public void Start() {
-        _budgetsManager = (BudgetsManager)FindObjectOfType(typeof(BudgetsManager));
-        _spawnerPosition = transform.position;
     }
 
     public void Update() {
-        if(_budgetsManager == null) {
+        if (_budgetsManager == null) {
             _budgetsManager = (BudgetsManager)FindObjectOfType(typeof(BudgetsManager));
-            if(_budgetsManager == null) {
-                return;
-            }
+            _spawnerPosition = transform.position;
+            return;
         }
-        if(_dirty && _budgetsManager.HasData()) {
+
+        if (_dirty && _budgetsManager.HasData()) {
             _dirty = false;
             _budgets = _budgetsManager.GetBudgets();
             _mainBudget = new BubbleBudget(_spawnerPosition, GetBudgets(""), false /* is sub budget */);
         }
 
-        if (_mainBudget != null) { _mainBudget.Update(_colliding); }
+        if (_mainBudget != null) {
+             _mainBudget.Update(_colliding);
+        }
         if (_subBudget != null) {
             _lerp += Time.deltaTime * 2.0f;
             if (_lerp > 1.0f) _lerp = 1.0f;

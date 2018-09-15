@@ -154,21 +154,16 @@ public class Account
 public class AccountsManager : MonoBehaviour {
 
   public void Start () {
-    if (_accounts == null) {
-      _accounts = new List<Account>();
-    }
   }
 
   public bool HasData() { return _has_data; }
-
   public List<Account> GetAccounts() { return _accounts; }
   public void SetAccounts(Account[] accounts) {
+		if(_accounts == null)	_accounts = new List<Account>();
+
     // Debug.Log("Loading Accounts");
     foreach (var a in accounts) {
       var account = JsonUtility.FromJson<Account>(JsonUtility.ToJson(a));
-      if (_accounts == null) {
-        _accounts = new List<Account>();
-      }
       _accounts.Add(account);
     }
     // Debug.Log("Loaded " + _accounts.Count + " Accounts");

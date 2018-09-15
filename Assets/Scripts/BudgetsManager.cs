@@ -40,14 +40,14 @@ public class Budget {
 public class BudgetsManager : MonoBehaviour {
 
   public void Start () {
-		_budgets = new List<Budget>();
-		_sub_budgets = new SortedDictionary<string, List<Budget>>();
 	}
 
 	public bool HasData() { return _has_data; }
 	public List<Budget> GetBudgets() { return _budgets;	}
 	public List<Budget> GetSubBudgets(string budget_guid) {	return _sub_budgets[budget_guid];	}
 	public void SetBudgets(Budget[] budgets) {
+		_budgets = new List<Budget>();
+		_sub_budgets = new SortedDictionary<string, List<Budget>>();
 		foreach (var b in budgets) {
 			var budget = JsonUtility.FromJson<Budget>(JsonUtility.ToJson(b));
 			if(budget.parent_guid.Length == 0) {

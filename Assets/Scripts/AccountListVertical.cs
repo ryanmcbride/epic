@@ -14,23 +14,27 @@ public class AccountListVertical : MonoBehaviour {
 
 	// Use this for initialization
 	public void Start () {
-		_accounts = new List<Account>();
-		_account_rows = new List<AccountRow>();
-		_accounts_manager = (AccountsManager)FindObjectOfType(typeof(AccountsManager));
-		
 		// Verify we have all required elements
 		Debug.Assert(accountRowPrefab != null, "Missing Account Row Prefab");
 	}
 
 	public void Update () {
+		if(_accounts_manager == null) {
+			_accounts_manager = (AccountsManager)FindObjectOfType(typeof(AccountsManager));
+			return;
+		}
+
 		// Wait until the Manager has Loaded Data
-		if(_dirty && _accounts_manager.GetAccounts().Count > 0) {
+		if(_dirty && _accounts_manager.HasData()) {
 			_dirty = false;
 			SetAccounts(_accounts_manager.GetAccounts());
 		}
 	}
 
 	public void SetAccounts(List<Account> accounts) {
+		if(_accounts == null) _accounts = new List<Account>();
+		if(_account_rows == null) _account_rows = new List<AccountRow>();
+
 		foreach (var row in _account_rows) {
 			Object.Destroy(row.gameObject);
 		}
