@@ -224,6 +224,12 @@ public class BudgetSpawner : MonoBehaviour {
     }
 
     public void Update() {
+        if(_budgetsManager == null) {
+            _budgetsManager = (BudgetsManager)FindObjectOfType(typeof(BudgetsManager));
+            if(_budgetsManager == null) {
+                return;
+            }
+        }
         if(_dirty && _budgetsManager.HasData()) {
             _dirty = false;
             _budgets = _budgetsManager.GetBudgets();
