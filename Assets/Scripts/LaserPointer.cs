@@ -151,7 +151,7 @@ public class LaserPointer : MonoBehaviour
 
         // Warp to new scene
         if (SceneManager.GetActiveScene().name == "AVP5_VR") {
-            SceneManager.LoadScene("MXVRScene");
+            SceneManager.LoadScene("Demo");
         } else {
             SceneManager.LoadScene("AVP5_VR");
         }
