@@ -36,14 +36,6 @@ public class AccountRow : MonoBehaviour {
 			var color = new Color32(128, 191, 255, 255);
 			_background_material.color = color;
 			_background_material.SetColor("_EmissionColor", color);
-			/*
-			//_background_material.emissionColor = new Color32(128, 191, 255, 255);
-			var colors = _background_material.GetColorArray();
-			Debug.Log("Set Selected: Num Colors (" + colors.Length + ")");
-			foreach (var color in colors)	{
-				Debug.Log("Set Selected Color (" + color.ToString() + ")");
-			}
-			*/
 		} else {
 			_background_material.color = Color.white;
 			_background_material.SetColor("_EmissionColor", Color.white);

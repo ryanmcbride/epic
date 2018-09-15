@@ -33,7 +33,7 @@ public class TransactionRow : MonoBehaviour {
 		}
 		descriptionText.text = transaction.description;
 		categoryText.text = transaction.transaction_type.ToString();
-		balanceText.text = transaction.GetFormattedBalance();
+		balanceText.text = transaction.GetFormattedAmount();
 		balanceText.color = transaction.GetBalanceColor();
 	}
 
