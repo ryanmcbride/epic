@@ -42,9 +42,7 @@ public class BubbleBudget {
 
             float volume = UNIT_SPHERE_VOLUME * (budget.amount / max);
             float radius = (float)Math.Pow(0.75f * volume / Math.PI, 0.333333f);
-            //float scale = radius;
-
-            //Debug.Log("Volume: " + volume + " Radius: " + radius + " Budget amount: " + budget.amount + " Max: " + max);
+            
             GameObject sub = CreateBubble(radius, budget);
             sub.transform.parent = center.transform;
 
@@ -56,7 +54,7 @@ public class BubbleBudget {
                 float b = previous_magnitude - 1.0f + radius;
                 float c = 1.0f + radius;
                 float angle_b = (float)Math.Acos((c * c + a * a - b * b) / (2.0 * c * a)) + previous_angle;
-                //Debug.LogFormat("{0} {1} {2} {3}", a, b, c, angle_b);
+                
                 sub.transform.localPosition = new Vector3((float)Math.Cos(angle_b) * magnitude * 0.5f, (float)Math.Sin(angle_b) * magnitude * 0.5f, 0.0f);
                 previous_angle = angle_b;
             }
@@ -199,47 +197,6 @@ public class BudgetData : MonoBehaviour {
 }
 
 public class BudgetSpawner : MonoBehaviour {
-
-//  Windows dll ties.
-
-    // [DllImport("moneymobilex_unity")]
-    // private static extern float sanity_check();
-
-    // [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void LoginDelegate(bool success);
-    // [DllImport("moneymobilex_unity")]
-    // private static extern void login(string username, string password, [MarshalAs(UnmanagedType.FunctionPtr)]LoginDelegate functionCallback);
-
-    // [DllImport("moneymobilex_unity")]
-    // private static extern IntPtr getModel(string modelJson);
-
-    // [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void SyncDelegate();
-    // [DllImport("moneymobilex_unity")]
-    // private static extern void syncModel(string modelName, [MarshalAs(UnmanagedType.FunctionPtr)]SyncDelegate functionCallback);
-
-    // [DllImport("moneymobilex_unity")]
-    // private static extern void heartbeat();
-
-    
-//  Mac dummy data
-    private static float sanity_check() {
-        return 0.0f;
-    }
-    private static void login(string username, string password, LoginDelegate functionCallback) {
-        functionCallback(true);
-    }
-    private static string getModel(string modelJson) {
-        return budget_json;
-    }
-    private static void syncModel(string modelName, SyncDelegate functionCallback) {
-        //Do stuff, probably nothing.
-        functionCallback();
-    }
-    private static void heartbeat() {
-        //do nothing
-    }
-
     private static Vector3 _spawnerPosition;
     private static BubbleBudget _mainBudget;
     private static BubbleBudget _subBudget;
@@ -251,51 +208,27 @@ public class BudgetSpawner : MonoBehaviour {
     private static Vector3 _startScale;
     private static Vector3 _startPosition;
     private static GameObject _colliding;
-
-    public static void SyncCallback() {
-        // Windows code
-        // IntPtr budgets_ptr = getModel("budgets");
-        // string budgets_json = Marshal.PtrToStringAnsi(budgets_ptr);
-
-        //Mac code
-        string budgets_json = getModel("budgets");
-        BudgetsManager manager = (BudgetsManager)GameObject.Find("Managers").GetComponent("BudgetsManager");
-        manager.Start();
-        _budgets = manager.GetBudgets();
-        //Debug.Log("FirstBudgetS Name: " + _budgets[0].name + " FirstBudgetS Amount: " + _budgets[0].amount);
-        //Debug.Log("SecondBudgetS Name: " + _budgets[1].name + " SecondBudgeS Amount: " + _budgets[1].amount);
-        //_budgets = JsonUtility.FromJson<BudgetsManager.BudgetCollection>(budgets_json);
-        //Debug.LogFormat("{0}", budgets_json);
-        //Debug.LogFormat("{0}", "Budget Size:"+_budgets.Count);
-        _mainBudget = new BubbleBudget(_spawnerPosition, GetBudgets(""), false /* is sub budget */);
-    }
+    private static BudgetsManager _budgetsManager;
+    private bool _dirty = true;
 
     public static Budget[] GetBudgets(string parent_guid) {
         Budget[] subset = _budgets.Where( b => (b.parent_guid == parent_guid || b.guid == parent_guid || (parent_guid == "" && b.parent_guid == null)) && b.name != "Income").ToArray();
-        Debug.LogFormat("{0}", "Subset Length: "+subset.Length);
         Array.Sort<Budget>(subset, (left, right) => right.amount.CompareTo(left.amount));
-        //Debug.Log("FirstBudget Name: " + subset[0].name + " FirstBudget Amount: " + subset[0].amount);
-        //Debug.Log("SecondBudget Name: " + subset[1].name + " SecondBudget Amount: " + subset[1].amount);
-        //Debug.Log("FirstBudgetB Name: " + _budgets[0].name + " FirstBudgetB Amount: " + _budgets[0].amount);
-        //Debug.Log("SecondBudgetB Name: " + _budgets[1].name + " SecondBudgetB Amount: " + _budgets[1].amount);
         return subset;
     }
 
-    public static void LoginCallback(bool success) {
-        //Debug.LogFormat("Logged in? {0}", success);
-        syncModel("budgets", SyncCallback);
-    }
-
-    // Use this for initialization
     public void Start() {
-        //Debug.LogFormat("Start!");
-        //Debug.LogFormat("Called sanity_check() => {0}", sanity_check());
-        login(USERNAME, PASSWORD, LoginCallback);
+        _budgetsManager = (BudgetsManager)FindObjectOfType(typeof(BudgetsManager));
         _spawnerPosition = transform.position;
     }
 
-    // Update is called once per frame
     public void Update() {
+        if(_dirty && _budgetsManager.HasData()) {
+            _dirty = false;
+            _budgets = _budgetsManager.GetBudgets();
+            _mainBudget = new BubbleBudget(_spawnerPosition, GetBudgets(""), false /* is sub budget */);
+        }
+
         if (_mainBudget != null) { _mainBudget.Update(_colliding); }
         if (_subBudget != null) {
             _lerp += Time.deltaTime * 2.0f;
@@ -303,12 +236,6 @@ public class BudgetSpawner : MonoBehaviour {
 
             _subBudget.Animate(_startPosition, _startScale, _lerp);
             _subBudget.Update(_colliding);
-        }
-
-        // Heartbeat every 1 second
-        if (Time.time >= _nextUpdate) {
-            _nextUpdate = Mathf.FloorToInt(Time.time) + 1;
-            heartbeat();
         }
     }
 
@@ -326,7 +253,6 @@ public class BudgetSpawner : MonoBehaviour {
         _lerp = 0.0f;
         _startPosition = obj.transform.position;
         _startScale = obj.transform.localScale;
-        //Debug.Log("GotoSubBudget!!");
         _subBudget = new BubbleBudget(_spawnerPosition, GetBudgets(budgetData.guid), true /* is sub budget */);
     }
 
@@ -337,7 +263,4 @@ public class BudgetSpawner : MonoBehaviour {
     public static void BudgetHover(GameObject obj) {
         _colliding = obj;
     }
-
-    private static string budget_json = "{\"budgets\":[{\"budget\": {\"id\": 1, \"amount\": 16, \"category_guid\": \"CAT-7cccbafa-87d7-c9a6-661b-8b3402fe9e78\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-1e0e7bb2-0af8-0a69-02cd-8b7350000096\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Pets\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 2, \"amount\": 134, \"category_guid\": \"CAT-8edf9663-623e-4735-490e-31288f0a70b0\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-d3e113a0-325f-7a26-83da-07dbf6dfa545\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Gifts & Donations\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 3, \"amount\": 98, \"category_guid\": \"CAT-bf5c9cca-c96b-b50d-440d-38d9adfda5b0\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-ecded965-1ad6-4e1c-80d8-b586d791f11d\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Education\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 4, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 4, \"amount\": 4, \"category_guid\": \"CAT-94b11142-e97b-941a-f67f-6e18d246a23f\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-5504874a-ddd3-5871-0b3a-8016eb4f1603\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Business Services\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 5, \"amount\": 140, \"category_guid\": \"CAT-79b02f2f-2adc-88f0-ac2b-4e71ead9cfc8\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-6bad8f8c-c4a3-3370-f3e8-eb79f1a02dd5\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Bills & Utilities\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 6, \"amount\": 3, \"category_guid\": \"CAT-d73ee74b-13a4-ac3e-4015-fc4ba9a62b2a\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-63720105-8756-6de4-2803-6216a9ee578c\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Fees & Charges\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 7, \"amount\": 0, \"category_guid\": \"CAT-ddc9b8e0-a9a1-e31e-a467-2c33e553afd9\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-936c1a24-a0db-4013-3020-17f5a933b8a9\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Home Improvement\", \"parent_guid\": \"BGT-f5843ce5-233f-5dc6-42ec-1cae407bf1e0\", \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 8, \"amount\": 183, \"category_guid\": \"CAT-6c7de3f8-de6c-7061-1dd2-b093044014bf\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-2ddfe567-7f06-ff79-d2cf-ee9976f96cac\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Financial\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 9, \"amount\": 0, \"category_guid\": \"CAT-ee48b740-c981-778b-3c02-04540dec0262\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-e6b04675-5d84-6db8-1af6-5be0d4f7eade\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Dentist\", \"parent_guid\": \"BGT-d484079f-af3b-192a-2413-ea91165681d4\", \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 10, \"amount\": 253, \"category_guid\": \"CAT-ea23d844-cbd1-eb10-f6ac-0df9610e59ae\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-c503f94d-1d06-849f-4e03-d4c3ce58ee17\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Travel\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 2, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 11, \"amount\": 0, \"category_guid\": \"CAT-e671e3a1-b7cb-f0a9-ac6e-bc4632245c31\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-6852bcec-c437-946e-34b4-93591cbd1ed9\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Home Supplies\", \"parent_guid\": \"BGT-f5843ce5-233f-5dc6-42ec-1cae407bf1e0\", \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 12, \"amount\": 134, \"category_guid\": \"CAT-aad51b46-d6f7-3da5-fd6e-492328b3023f\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-3a98bb41-610d-fe22-a334-e8953631d083\", \"is_deleted\": null, \"is_exceeded\": false,"+
-    " \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Shopping\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 13, \"amount\": 21, \"category_guid\": \"CAT-0cb1d99d-f558-99e3-2282-b31f359b411a\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-7ddce3d1-a0a4-2450-da4a-d1f8720aa90f\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Kids\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 14, \"amount\": 164, \"category_guid\": \"CAT-52fa4693-c088-afb2-2a99-7bc39bb23a0f\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-d484079f-af3b-192a-2413-ea91165681d4\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Health & Fitness\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 15, \"amount\": 304, \"category_guid\": \"CAT-bd56d35a-a9a7-6e10-66c1-5b9cc1b6c81a\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-3f35e6a8-2727-6409-45ab-217b00fa3497\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Food & Dining\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 2, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 16, \"amount\": 25, \"category_guid\": \"CAT-e5154228-fe45-790d-a280-f6bf5ae5ac9f\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-b05144b6-c18e-2d28-e4c0-48ae8ac7239b\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Personal Care\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 17, \"amount\": 227, \"category_guid\": \"CAT-7829f71c-2e8c-afa5-2f55-fa3634b89874\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-afec2eb5-26a3-f816-35ca-f7868c6739bd\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Auto & Transport\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 24.68, \"projected_transaction_total_ratio\": null, \"revision\": 5, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 18, \"amount\": 501, \"category_guid\": \"CAT-b709172b-4eb7-318e-3b5d-e0f0500b32ac\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-f5843ce5-233f-5dc6-42ec-1cae407bf1e0\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Home\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 3, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 19, \"amount\": 25, \"category_guid\": \"CAT-e04e9d1e-e041-c315-2e50-094143ab3f73\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-697b62de-3f40-fa64-7ab9-1e7e201808f4\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": false, \"is_off_track\": false, \"metadata\": null, \"name\": \"Entertainment\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}},{\"budget\": {\"id\": 20, \"amount\": 6200, \"category_guid\": \"CAT-bf9f3294-4c40-1677-d269-54fbc189faf3\", \"client_guid\": null, \"created_at\": 1536183109, \"deleted_at\": null, \"end_date\": null, \"external_guid\": null, \"external_id\": null, \"guid\": \"BGT-1feae2ed-89ac-7aa5-460d-b7e8285b9119\", \"is_deleted\": null, \"is_exceeded\": false, \"is_income\": true, \"is_off_track\": false, \"metadata\": null, \"name\": \"Income\", \"parent_guid\": null, \"projected_spending\": null, \"projected_transaction_total\": 0, \"projected_transaction_total_ratio\": null, \"revision\": 1, \"start_date\": null, \"status_code\": null, \"top_level_category_guid\": null, \"transaction_total\": 0, \"updated_at\": 1536183109, \"user_guid\": null}}]}";
 }
