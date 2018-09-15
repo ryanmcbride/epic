@@ -126,7 +126,7 @@ public static void HandleLogin(bool success) {
 
 public static void HandleSync(string modelName) {
 		IntPtr models = getModel(modelName);
-		string model_json = Marshal.PtrToStringUTF8(models);
+		string model_json = Marshal.PtrToStringAnsi(models);
 		Debug.Log("getModel(" + modelName + ") " + model_json);
 
 		//Update Managers
