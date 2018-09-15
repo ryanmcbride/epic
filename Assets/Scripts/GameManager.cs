@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour {
 	private AccountListVertical _accountListVertical;
 	private BudgetsManager _budgetsManager;
 	private BudgetSpawner _budgetSpawner;
+	private SpendingManager _spendingManager;
 	private TransactionManager _transactionManager;
 	private TransactionListVertical _transactionListVertical;
 
@@ -62,10 +63,15 @@ public class GameManager : MonoBehaviour {
 		// TODO: CollectionsManager
 		// TODO: MembersManager
 	
+		if (_spendingManager== null) {
+			_spendingManager = (SpendingManager)FindObjectOfType(typeof(SpendingManager));
+		}
+
     if (_transactionManager == null) {
 			_transactionManager = (TransactionManager)FindObjectOfType(typeof(TransactionManager));
 			_sendTransactionData();
 		}
+
 		if (_transactionListVertical == null) {
     	_transactionListVertical = (TransactionListVertical)FindObjectOfType(typeof(TransactionListVertical));
 		}
@@ -127,10 +133,13 @@ public class GameManager : MonoBehaviour {
 	}
 
 	protected void _sendTransactionData() {
-		if (_transactionManager && _transaction_collection_list.Count > 0) {
-			for (int ii = 0; ii < _transaction_collection_list.Count; ii++) {
-				bool last_entry = ii == _transaction_collection_list.Count - 1;
+		for (int ii = 0; ii < _transaction_collection_list.Count; ii++) {
+			bool last_entry = ii == _transaction_collection_list.Count - 1;
+			if (_transactionManager) {
 				_transactionManager.AddTransactions(_transaction_collection_list[ii].items, last_entry);
+			}
+			if (_spendingManager) {
+				_spendingManager.AddTransactions(_transaction_collection_list[ii].items, last_entry);
 			}
 		}
 	}

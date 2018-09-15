@@ -161,7 +161,8 @@ public class BubbleBudget {
         center.transform.localScale = Vector3.Lerp(_startScale, new Vector3(1.0f, 1.0f, 1.0f), t2);
     }
 
-    private string CategoryGuidToTextureName(string category_guid) {
+    // TODO: Move this to CategoryManager
+    public static string CategoryGuidToTextureName(string category_guid) {
         switch (category_guid) {
             case "CAT-7829f71c-2e8c-afa5-2f55-fa3634b89874": return "auto";
             case "CAT-79b02f2f-2adc-88f0-ac2b-4e71ead9cfc8": return "utilities";
