@@ -19,12 +19,12 @@ public class BubbleBudget {
     private Vector3 _spawnerPosition;
     public GameObject center;
 
-    public BubbleBudget(Vector3 parentPosition, BudgetsManager.Budget[] _budgets, bool isSubBudget) {
+    public BubbleBudget(Vector3 parentPosition, Budget[] _budgets, bool isSubBudget) {
         _spawnerPosition = parentPosition;
         _icons = new List<GameObject>();
         _spheres = new List<GameObject>();
 
-        BudgetsManager.Budget budget = _budgets[0];
+        Budget budget = _budgets[0];
         float max = budget.amount;
         //Debug.Log("Budget Name: " + budget.name);
 
@@ -76,7 +76,7 @@ public class BubbleBudget {
         center.SetActive(active);
     }
 
-    private GameObject CreateBubble(float scale, BudgetsManager.Budget budget) {
+    private GameObject CreateBubble(float scale, Budget budget) {
         double percent_spent = budget.transaction_total / budget.amount;
 
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -243,7 +243,7 @@ public class BudgetSpawner : MonoBehaviour {
     private static Vector3 _spawnerPosition;
     private static BubbleBudget _mainBudget;
     private static BubbleBudget _subBudget;
-    private static List<BudgetsManager.Budget> _budgets;
+    private static List<Budget> _budgets;
     private static string USERNAME = "march17";
     private static string PASSWORD = "anypass";
     private static int _nextUpdate = 1;
@@ -270,10 +270,10 @@ public class BudgetSpawner : MonoBehaviour {
         _mainBudget = new BubbleBudget(_spawnerPosition, GetBudgets(""), false /* is sub budget */);
     }
 
-    public static BudgetsManager.Budget[] GetBudgets(string parent_guid) {
-        BudgetsManager.Budget[] subset = _budgets.Where( b => (b.parent_guid == parent_guid || b.guid == parent_guid || (parent_guid == "" && b.parent_guid == null)) && b.name != "Income").ToArray();
+    public static Budget[] GetBudgets(string parent_guid) {
+        Budget[] subset = _budgets.Where( b => (b.parent_guid == parent_guid || b.guid == parent_guid || (parent_guid == "" && b.parent_guid == null)) && b.name != "Income").ToArray();
         Debug.LogFormat("{0}", "Subset Length: "+subset.Length);
-        Array.Sort<BudgetsManager.Budget>(subset, (left, right) => right.amount.CompareTo(left.amount));
+        Array.Sort<Budget>(subset, (left, right) => right.amount.CompareTo(left.amount));
         //Debug.Log("FirstBudget Name: " + subset[0].name + " FirstBudget Amount: " + subset[0].amount);
         //Debug.Log("SecondBudget Name: " + subset[1].name + " SecondBudget Amount: " + subset[1].amount);
         //Debug.Log("FirstBudgetB Name: " + _budgets[0].name + " FirstBudgetB Amount: " + _budgets[0].amount);
