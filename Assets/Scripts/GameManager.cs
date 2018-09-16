@@ -96,30 +96,25 @@ public class GameManager : MonoBehaviour {
   }
 
   protected void _sendData() {
-    if (_accountsManager != null && !_accountsManager.HasData() && _account_collection_list != null && _account_collection_list.Count > 0) {
-      _accountsManager.SetAccounts(_account_collection_list[0].items);
-    }
+    var readyToSendAccountData = _accountsManager != null && !_accountsManager.HasData() && _account_collection_list != null && _account_collection_list.Count > 0;
+    var readyToSendBudgetData = _budgetsManager != null && !_budgetsManager.HasData() && _budget_collection_list != null && _budget_collection_list.Count > 0;
+    var readyToSendCategoryData = _categoryManager != null && !_categoryManager.HasData() && _category_collection_list != null && _category_collection_list.Count > 0;
+    var readyToSendMembersData = _membersManager != null && !_membersManager.HasData() && _member_collection_list != null && _member_collection_list.Count > 0;
+    var readyToSendSpendingData = _spendingManager != null && !_spendingManager.HasData() && _transaction_collection_list != null && _transaction_collection_list.Count > 0;
+    var readyToSendTransactionData = _transactionManager != null && !_transactionManager.HasData() && _transaction_collection_list != null && _transaction_collection_list.Count > 0;
 
-    if (_budgetsManager != null && !_budgetsManager.HasData() && _budget_collection_list != null && _budget_collection_list.Count > 0l) {
-       _budgetsManager.SetBudgets(_budget_collection_list[0].items);
-    }
-
-    if (_categoryManager != null && !_categoryManager.HasData() && _category_collection_list != null && _category_collection_list.Count > 0) {
-      _categoryManager.SetCategories(_category_collection_list[0].items);
-    }
-
-    if (_membersManager != null && !_membersManager.HasData() && _member_collection_list != null && _member_collection_list.Count > 0) {
-      _membersManager.SetMembers(_member_collection_list[0].items);
-    }
-
-    if (_spendingManager != null && !_spendingManager.HasData() && _transaction_collection_list != null && _transaction_collection_list.Count > 0) {
+    if (readyToSendAccountData)  _accountsManager.SetAccounts(_account_collection_list[0].items);
+    if (readyToSendBudgetData)   _budgetsManager.SetBudgets(_budget_collection_list[0].items);
+    if (readyToSendCategoryData) _categoryManager.SetCategories(_category_collection_list[0].items);
+    if (readyToSendMembersData)  _membersManager.SetMembers(_member_collection_list[0].items);
+    if (readyToSendSpendingData) {
       for (int ii = 0; ii < _transaction_collection_list.Count; ii++) {
         bool last_entry = ii == _transaction_collection_list.Count - 1;
         _spendingManager.AddTransactions(_transaction_collection_list[ii].items, last_entry);
       }
     }
 
-    if (_transactionManager != null && !_transactionManager.HasData() && _transaction_collection_list != null && _transaction_collection_list.Count > 0) {
+    if (readyToSendTransactionData) {
       for (int ii = 0; ii < _transaction_collection_list.Count; ii++) {
         bool last_entry = ii == _transaction_collection_list.Count - 1;
         _transactionManager.AddTransactions(_transaction_collection_list[ii].items, last_entry);
@@ -189,6 +184,12 @@ public class GameManager : MonoBehaviour {
   public void HandleLogin(bool success) {
     Debug.Log("GaneManager: login (" + success.ToString() + ")");
 
+    if (_account_collection_list == null) _account_collection_list = new List<AccountCollection>();
+    if (_budget_collection_list == null) _budget_collection_list = new List<BudgetCollection>();
+    if (_category_collection_list == null) _category_collection_list = new List<CategoryCollection>();
+    if (_member_collection_list == null) _member_collection_list = new List<MemberCollection>();
+    if (_transaction_collection_list == null) _transaction_collection_list = new List<TransactionCollection>();
+
     syncModel("accounts", HandleSync);
     syncModel("budgets", HandleSync);
     syncModel("categories", HandleSync);
@@ -201,12 +202,6 @@ public class GameManager : MonoBehaviour {
     IntPtr models = getModel(modelName);
     string model_json = Marshal.PtrToStringAnsi(models);
     Debug.Log("GaneManager: getModel(" + modelName + ") ");
-
-    if(_account_collection_list == null) _account_collection_list = new List<AccountCollection>();
-    if (_budget_collection_list == null) _budget_collection_list = new List<BudgetCollection>();
-    if (_category_collection_list == null) _category_collection_list = new List<CategoryCollection>();
-    if (_member_collection_list == null) _member_collection_list = new List<MemberCollection>();
-    if (_transaction_collection_list == null) _transaction_collection_list = new List<TransactionCollection>();
 
     //Update Data
     if (modelName == "accounts") {
