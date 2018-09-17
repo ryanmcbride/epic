@@ -44,6 +44,7 @@ public class LaserPointer : MonoBehaviour
     private Vector3 hitPoint; // Point where the raycast hits
     private bool shouldTeleport; // True if there's a valid teleport target
     private bool shouldWarp;
+    private string warpLocation = "AVP5_VR";
 
     private SteamVR_Controller.Device Controller
     {
@@ -101,6 +102,18 @@ public class LaserPointer : MonoBehaviour
                 teleportReticleTransform.position = hitPoint + teleportReticleOffset;
 
                 shouldWarp = true;
+                if (hit.transform.gameObject.name == "WarpSphere")
+                {
+                    warpLocation = "Demo";
+                }
+                else if (hit.transform.gameObject.name == "SpaceWarp")
+                {
+                    warpLocation = "SpaceScene";
+                }
+                else if (hit.transform.gameObject.name == "HomeWarp")
+                {
+                    warpLocation = "AVP5_VR";
+                }
 
             } else {
                 laser.SetActive(false);
@@ -150,10 +163,9 @@ public class LaserPointer : MonoBehaviour
         reticle.SetActive(false); // Hide reticle
 
         // Warp to new scene
-        if (SceneManager.GetActiveScene().name == "AVP5_VR") {
-            SceneManager.LoadScene("Demo");
-        } else {
-            SceneManager.LoadScene("AVP5_VR");
-        }
+        SceneManager.LoadScene(warpLocation);
+
+        //Set warp location back to the house
+        warpLocation = "AVP5_VR";
     }
 }
