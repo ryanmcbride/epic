@@ -58,41 +58,40 @@ public class GameManager : MonoBehaviour {
 
   protected void _updateObjects() {
     if (_accountsManager == null) {
-      _accountsManager = (AccountsManager)FindObjectOfType(typeof(AccountsManager));
+      _accountsManager = FindObjectOfType<AccountsManager>();
     }
 
     if (_accountListVertical == null) {
-      _accountListVertical = (AccountListVertical)FindObjectOfType(typeof(AccountListVertical));
+      _accountListVertical = FindObjectOfType<AccountListVertical>();
     }
 
     if (_budgetsManager == null) {
-      _budgetsManager = (BudgetsManager)FindObjectOfType(typeof(BudgetsManager));
+      _budgetsManager = FindObjectOfType<BudgetsManager>();
     }
 
     if (_budgetSpawner == null) {
-      _budgetSpawner = (BudgetSpawner)FindObjectOfType(typeof(BudgetSpawner));
+      _budgetSpawner = FindObjectOfType<BudgetSpawner>();
     }
 
     if (_categoryManager == null) {
-      _categoryManager = (CategoryManager)FindObjectOfType(typeof(CategoryManager));
+      _categoryManager = FindObjectOfType<CategoryManager>();
     }
 
     if (_membersManager == null) {
-      _membersManager = (MembersManager)FindObjectOfType(typeof(MembersManager));
+      _membersManager = FindObjectOfType<MembersManager>();
     }
 
     if (_spendingManager == null) {
-      _spendingManager = (SpendingManager)FindObjectOfType(typeof(SpendingManager));
+      _spendingManager = FindObjectOfType<SpendingManager>();
     }
 
     if (_transactionManager == null) {
-      _transactionManager = (TransactionManager)FindObjectOfType(typeof(TransactionManager));
+      _transactionManager = FindObjectOfType<TransactionManager>();
     }
 
     if (_transactionListVertical == null) {
-      _transactionListVertical = (TransactionListVertical)FindObjectOfType(typeof(TransactionListVertical));
+      _transactionListVertical = FindObjectOfType<TransactionListVertical>();
     }
-
   }
 
   protected void _sendData() {

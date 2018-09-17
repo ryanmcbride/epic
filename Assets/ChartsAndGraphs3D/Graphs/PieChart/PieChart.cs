@@ -34,7 +34,7 @@ namespace ChartsAndGraphs3D
         List<int> pParts = new List<int>();      //values to %
         internal List<Slice> Slices = new List<Slice>();
 
-        public Transform ScliesParent;
+        public Transform SlicesParent;
 
 
         List<float> PartsEditor = new List<float>();      //values to %
@@ -45,7 +45,7 @@ namespace ChartsAndGraphs3D
             InitIDs();
             TextDisplayCreator.Create(transform, TextDisplayCreator.Position, InfoGetterMethod, LookAtMethod);
             TitleText.Create(transform, TitlePositionMethod, LookAtMethod);
-            if(ScliesParent == null) ScliesParent = transform;
+            if(SlicesParent == null) SlicesParent = transform;
         }
 
         private Vector3 TitlePositionMethod()
@@ -66,7 +66,10 @@ namespace ChartsAndGraphs3D
             List<TextRowInfo> list = new List<TextRowInfo>();
             for (int i = 0; i < Parts.Count; i++)
             {
-                list.Add(new TextRowInfo() { PreText = Parts[i].Text, PostText = TextDisplayCreator.PostText, Value = pParts[i], c = PartColors[Mathf.Min(i, PartColors.Count - 1)] });
+                list.Add(new TextRowInfo() { PreText = Parts[i].Text, 
+                                             PostText = TextDisplayCreator.PostText, 
+                                             Value = pParts[i], 
+                                             c = PartColors[Mathf.Min(i, PartColors.Count - 1)] });
             }
 
             return list;
@@ -151,7 +154,7 @@ namespace ChartsAndGraphs3D
 
         private void CreateSlice(int i, GameObject prefab, bool instant)
         {
-            GameObject g = Instantiate(prefab, ScliesParent);
+            GameObject g = Instantiate(prefab, SlicesParent);
             g.transform.localRotation = Quaternion.Euler(-90,0,0);
 
             //set height -> different Parts are different high

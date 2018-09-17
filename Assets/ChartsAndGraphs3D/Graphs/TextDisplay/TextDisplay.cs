@@ -10,6 +10,12 @@ namespace ChartsAndGraphs3D
 
     public class TextDisplay : MonoBehaviour
     {
+        public enum RowVerticalAlignment {
+            Center,
+            Top,
+            Bottom
+        }
+        
         internal List<TextRow> Rows = new List<TextRow>();
 
         List<TextRowInfo> LastInfos = new List<TextRowInfo>();
@@ -27,6 +33,7 @@ namespace ChartsAndGraphs3D
 
         public event InfoGetter InfoGetterEvent;
 
+        public RowVerticalAlignment rowVerticalAlignment = RowVerticalAlignment.Center;
 
         public Vector3 Position;
 
@@ -117,10 +124,18 @@ namespace ChartsAndGraphs3D
 
         private void CheckPositions()
         {
+            var totalHeight = Rows.Count * creator.TextRowOffset;
+            var num = Rows.Count - 1;
             for (int i = 0; i < Rows.Count; i++)
             {
-                Rows[i].transform.localPosition = new Vector3(0f, (i - (Rows.Count / 2f)) * creator.TextRowOffset, 0f);
-            }
+                float y = 0;
+                switch (rowVerticalAlignment) {
+                    case RowVerticalAlignment.Top:    y = i * -creator.TextRowOffset;                break;
+                    case RowVerticalAlignment.Center: y = (i - (num / 2f)) * -creator.TextRowOffset; break;
+                    case RowVerticalAlignment.Bottom: y = (i - num) * -creator.TextRowOffset;        break;
+                }
+                Rows[i].transform.localPosition = new Vector3(0f, y, 0f);
+             }
         }
 
         public void ResetRows()
@@ -156,6 +171,8 @@ namespace ChartsAndGraphs3D
         /// </summary>
         public string PreText;
 
+        public float something = 123.0f;
+
         public float Scale = 1f;
 
         public float TextRowOffset = 0.8f;
@@ -164,8 +181,7 @@ namespace ChartsAndGraphs3D
         /// </summary>
         public string PostText;
         
-
-
+        public TextDisplay.RowVerticalAlignment rowVerticalAlignment = TextDisplay.RowVerticalAlignment.Center;
 
         internal TextDisplay TextDisplay;
         internal GameObject go;
@@ -198,6 +214,7 @@ namespace ChartsAndGraphs3D
             TextDisplay = go.GetComponent<TextDisplay>();
             TextDisplay.creator = this;
             TextDisplay.Position = pos;
+            TextDisplay.rowVerticalAlignment = rowVerticalAlignment;
             TextDisplay.InfoGetterEvent += InfoGetterMethod;
             LookAtMethod = lookAtMethod;
         }
@@ -214,6 +231,7 @@ namespace ChartsAndGraphs3D
         public string Text;
         public float Scale = 0.18f;
         internal Transform go;
+        public TextAnchor textAnchor = TextAnchor.MiddleLeft;
 
         public void Create(Transform parent, Vector3Method posMethod, Vector3Method directionMethod)
         {
@@ -233,6 +251,7 @@ namespace ChartsAndGraphs3D
                 go = nParent;
 
                 text3Dobj.GetComponent<TextMesh>().text = Text;
+                text3Dobj.GetComponent<TextMesh>().anchor = textAnchor;
                 text3Dobj.transform.localScale = new Vector3(Scale, Scale, Scale);
                 text3Dobj.transform.LookAt(text3Dobj.transform.position + directionMethod());
             }

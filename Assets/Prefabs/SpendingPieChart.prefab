@@ -62,7 +62,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1878111137371364}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.375, y: 0.421, z: 6.628}
+  m_LocalPosition: {x: -4.375, y: 0.457, z: 6.628}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 4102783471630014}
@@ -82,9 +82,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TitleText:
     Active: 1
-    PositionOffset: {x: -1.2, y: 2.8, z: 0}
-    Text: Parts
+    PositionOffset: {x: 0, y: 2.8, z: 0}
+    Text: Spending
     Scale: 0.18
+    textAnchor: 4
   PartColors: []
   middleSlice: {fileID: 1208550876306178, guid: 8ec1e7b0aa80e3f42a54b338bc3ff097,
     type: 2}
@@ -99,9 +100,11 @@ MonoBehaviour:
   Glow: 0
   TextDisplayCreator:
     TextDisplayActive: 1
-    Position: {x: 3, y: 2, z: 0}
-    PreText: 
+    Position: {x: 3, y: 0, z: 0}
+    PreText: List
+    something: 123
     Scale: 1.2
     TextRowOffset: 1
     PostText: '%'
-  ScliesParent: {fileID: 4102783471630014}
+    rowVerticalAlignment: 2
+  SlicesParent: {fileID: 4102783471630014}
