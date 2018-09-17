@@ -45,6 +45,7 @@ namespace ChartsAndGraphs3D
             InitIDs();
             TextDisplayCreator.Create(transform, TextDisplayCreator.Position, InfoGetterMethod, LookAtMethod);
             TitleText.Create(transform, TitlePositionMethod, LookAtMethod);
+            if(ScliesParent == null) ScliesParent = transform;
         }
 
         private Vector3 TitlePositionMethod()

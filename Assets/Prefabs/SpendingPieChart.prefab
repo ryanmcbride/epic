@@ -9,32 +9,16 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1426878627264620}
+  m_RootGameObject: {fileID: 1878111137371364}
   m_IsPrefabAsset: 1
---- !u!1 &1426878627264620
+--- !u!1 &1696033727439868
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4486528282964264}
-  - component: {fileID: 114379973072602104}
-  m_Layer: 0
-  m_Name: PieChart
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!1 &1920283042213324
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4632565789729942}
+  - component: {fileID: 4102783471630014}
   m_Layer: 0
   m_Name: SlicesParent
   m_TagString: Untagged
@@ -42,39 +26,55 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4486528282964264
+--- !u!1 &1878111137371364
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4303378011886740}
+  - component: {fileID: 114308560027576964}
+  m_Layer: 0
+  m_Name: SpendingPieChart
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4102783471630014
 Transform:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1426878627264620}
+  m_GameObject: {fileID: 1696033727439868}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 0.5, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4303378011886740}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4303378011886740
+Transform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1878111137371364}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.375, y: 0.421, z: 6.628}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
-  - {fileID: 4632565789729942}
+  - {fileID: 4102783471630014}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &4632565789729942
-Transform:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1920283042213324}
-  m_LocalRotation: {x: -0.08695907, y: 0.8499533, z: -0.08689891, w: 0.51231456}
-  m_LocalPosition: {x: 0.026452065, y: 0.013602257, z: 0.106569104}
-  m_LocalScale: {x: 1, y: 0.5, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4486528282964264}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 3.361, y: 117.436005, z: -13.725}
---- !u!114 &114379973072602104
+--- !u!114 &114308560027576964
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1426878627264620}
+  m_GameObject: {fileID: 1878111137371364}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c6c2a763e8bc26b4cbd7b33afca30bac, type: 3}
@@ -85,27 +85,13 @@ MonoBehaviour:
     PositionOffset: {x: -1.2, y: 2.8, z: 0}
     Text: Parts
     Scale: 0.18
-  PartColors:
-  - {r: 0, g: 0, b: 1, a: 1}
-  - {r: 1, g: 0, b: 0, a: 1}
-  - {r: 0, g: 1, b: 0, a: 1}
-  - {r: 1, g: 0.309, b: 0, a: 1}
-  - {r: 1, g: 0, b: 0.8896551, a: 1}
-  - {r: 0, g: 1, b: 0.91724133, a: 1}
+  PartColors: []
   middleSlice: {fileID: 1208550876306178, guid: 8ec1e7b0aa80e3f42a54b338bc3ff097,
     type: 2}
   startSlice: {fileID: 1732891393438744, guid: 0f9da94070350404eb749fd810f15352, type: 2}
   endSlice: {fileID: 1585577200407204, guid: 8326ab5bfa4ecd64d978faaab20c8c05, type: 2}
   fullSlice: {fileID: 1105500215084688, guid: d5c91d61bf8ebc441a05ee22dc1cb6ad, type: 2}
-  Parts:
-  - Value: 2.2
-    Text: 'Medium '
-  - Value: 1
-    Text: 'Small '
-  - Value: 2.5
-    Text: 'Average '
-  - Value: 2
-    Text: 'Medium '
+  Parts: []
   BuildUpSpeed: 1.5
   HeightOffsetPerPart: 3
   instantBuildUp: 0
@@ -118,4 +104,4 @@ MonoBehaviour:
     Scale: 1.2
     TextRowOffset: 1
     PostText: '%'
-  ScliesParent: {fileID: 4632565789729942}
+  ScliesParent: {fileID: 4102783471630014}

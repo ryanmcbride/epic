@@ -223,7 +223,7 @@ public class BudgetSpawner : MonoBehaviour {
 
     public void Update() {
         if (_budgetsManager == null) {
-            _budgetsManager = (BudgetsManager)FindObjectOfType(typeof(BudgetsManager));
+            _budgetsManager = FindObjectOfType<BudgetsManager>();
             _spawnerPosition = transform.position;
             return;
         }

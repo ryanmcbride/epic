@@ -20,7 +20,7 @@ public class AccountListVertical : MonoBehaviour {
 
 	public void Update () {
 		if(_accounts_manager == null) {
-			_accounts_manager = (AccountsManager)FindObjectOfType(typeof(AccountsManager));
+			_accounts_manager = FindObjectOfType<AccountsManager>();
 			return;
 		}
 

@@ -97,11 +97,14 @@ public class GameManager : MonoBehaviour {
 
   protected void _sendData() {
     var readyToSendAccountData = _accountsManager != null && !_accountsManager.HasData() && _account_collection_list != null && _account_collection_list.Count > 0;
-    var readyToSendBudgetData = _budgetsManager != null && !_budgetsManager.HasData() && _budget_collection_list != null && _budget_collection_list.Count > 0;
     var readyToSendCategoryData = _categoryManager != null && !_categoryManager.HasData() && _category_collection_list != null && _category_collection_list.Count > 0;
     var readyToSendMembersData = _membersManager != null && !_membersManager.HasData() && _member_collection_list != null && _member_collection_list.Count > 0;
-    var readyToSendSpendingData = _spendingManager != null && !_spendingManager.HasData() && _transaction_collection_list != null && _transaction_collection_list.Count > 0;
-    var readyToSendTransactionData = _transactionManager != null && !_transactionManager.HasData() && _transaction_collection_list != null && _transaction_collection_list.Count > 0;
+
+
+    // Don't send data to the following until they have Category Data
+    var readyToSendBudgetData = readyToSendCategoryData && _budgetsManager != null && !_budgetsManager.HasData() && _budget_collection_list != null && _budget_collection_list.Count > 0;
+    var readyToSendSpendingData = readyToSendCategoryData && _spendingManager != null && !_spendingManager.HasData() && _transaction_collection_list != null && _transaction_collection_list.Count > 0;
+    var readyToSendTransactionData = readyToSendCategoryData && _transactionManager != null && !_transactionManager.HasData() && _transaction_collection_list != null && _transaction_collection_list.Count > 0;
 
     if (readyToSendAccountData)  _accountsManager.SetAccounts(_account_collection_list[0].items);
     if (readyToSendBudgetData)   _budgetsManager.SetBudgets(_budget_collection_list[0].items);
