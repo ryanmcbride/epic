@@ -159,6 +159,10 @@ public class AccountsManager : MonoBehaviour {
   public bool HasData() { return _has_data; }
   public List<Account> GetAccounts() { return _accounts; }
   public void SetAccounts(Account[] accounts) {
+    _accounts = new List<Account>();
+    AddAccounts(accounts, true);
+  }
+  public void AddAccounts(Account[] accounts, bool final_page) {
 		if(_accounts == null)	_accounts = new List<Account>();
 
     // Debug.Log("Loading Accounts");
@@ -166,11 +170,14 @@ public class AccountsManager : MonoBehaviour {
       var account = JsonUtility.FromJson<Account>(JsonUtility.ToJson(a));
       _accounts.Add(account);
     }
-    // Debug.Log("Loaded " + _accounts.Count + " Accounts");
-    _accounts.Sort((x, y) => x.account_type.CompareTo(y.account_type));
-    _has_data = true;
+
+    if (final_page) {
+      // Debug.Log("Loaded " + _accounts.Count + " Accounts");
+      _accounts.Sort((x, y) => x.account_type.CompareTo(y.account_type));
+      _has_data = true;
+    }
   }
 
   protected bool _has_data = false;
-  protected List<Account> _accounts;
+  protected List<Account> _accounts = new List<Account>();
 }
