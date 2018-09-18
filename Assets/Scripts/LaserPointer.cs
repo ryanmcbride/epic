@@ -90,7 +90,7 @@ public class LaserPointer : MonoBehaviour
             }
         }
         //Is the trigger held down?
-        else if (Controller.GetPress(SteamVR_Controller.ButtonMask.Trigger))
+        else if (Controller.GetPress(SteamVR_Controller.ButtonMask.ApplicationMenu))
         {
             RaycastHit hit;
             if (Physics.Raycast(trackedObj.transform.position, transform.forward, out hit, 100, warpMask))
