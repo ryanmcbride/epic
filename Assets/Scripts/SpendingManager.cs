@@ -38,17 +38,14 @@ public class SpendingManager : MonoBehaviour {
 		_income = new Spending();
 		_ordered_spending = new List<Spending>();
 		_spending_by_category = new SortedDictionary<string, Spending>();
-		AddTransactions(transactions, true);
+ 		AddTransactions(transactions, true);
 	}
 
 	public void AddTransactions(Transaction[] transactions, bool final_page) {
-		if (_categoryManager == null) {
-      _categoryManager = FindObjectOfType<CategoryManager>();
-    }
-
-		if(_spending_by_category == null)	_spending_by_category = new SortedDictionary<string, Spending>();
+ 		if(_income == null)	_income = new Spending();
 		if(_ordered_spending == null) _ordered_spending = new List<Spending>();
-		if(_income == null)	_income = new Spending();
+		if(_spending_by_category == null)	_spending_by_category = new SortedDictionary<string, Spending>();
+		if (_categoryManager == null) _categoryManager = FindObjectOfType<CategoryManager>();
 
 		foreach (var trans in transactions) {
 			var transaction = JsonUtility.FromJson<Transaction>(JsonUtility.ToJson(trans));
@@ -98,11 +95,11 @@ public class SpendingManager : MonoBehaviour {
 			_has_data = true;
 
 			// Temp
-			Debug.Log("Spending Totals:");
-			foreach (var spending in _ordered_spending) {
-				var category = _categoryManager.GetCategory(spending.category_guid);
-				Debug.Log("    Percentage: " + spending.percentage.ToString("P") + "\tCategory: " + category.name + "\tTotal Spend: " + spending.total_amount.ToString());
-			}
+			// Debug.Log("Spending Totals:");
+			// foreach (var spending in _ordered_spending) {
+			// 	var category = _categoryManager.GetCategory(spending.category_guid);
+			// 	Debug.Log("    Percentage: " + spending.percentage.ToString("P") + "\tCategory: " + category.name + "\tTotal Spend: " + spending.total_amount.ToString());
+			// }
 
 			_sendDataToPieCharts();
 		}

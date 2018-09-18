@@ -48,6 +48,11 @@ public class BudgetsManager : MonoBehaviour {
 	public void SetBudgets(Budget[] budgets) {
 		_budgets = new List<Budget>();
 		_sub_budgets = new SortedDictionary<string, List<Budget>>();
+		AddBudgets(budgets, true);
+	}
+	public void AddBudgets(Budget[] budgets, bool final_page) {
+		if (_budgets == null) _budgets = new List<Budget>();
+		if (_sub_budgets == null) _sub_budgets = new SortedDictionary<string, List<Budget>>();
 		foreach (var b in budgets) {
 			var budget = JsonUtility.FromJson<Budget>(JsonUtility.ToJson(b));
 			if(budget.parent_guid.Length == 0) {
@@ -60,11 +65,13 @@ public class BudgetsManager : MonoBehaviour {
 				_sub_budgets[key].Add(budget);
 			}
 		}
-  	_has_data = true;
+		if (final_page) {
+  		_has_data = true;
+		}
 	}
 
   protected bool _has_data = false;
-	protected List<Budget> _budgets; 															 // Top level budgets
-	protected SortedDictionary<string, List<Budget>> _sub_budgets; // Sub-budgets based on budget guid
+	protected List<Budget> _budgets = new List<Budget>(); // Top level budgets
+	protected SortedDictionary<string, List<Budget>> _sub_budgets = new SortedDictionary<string, List<Budget>>(); // Sub-budgets based on budget guid
 
 }

@@ -93,15 +93,21 @@ public class MembersManager : MonoBehaviour {
 		return null;
 	}
 
-	public void SetMembers(Member[] members) {
-		_members = new List<Member>();
+  public void SetMembers(Member[] members) {
+    _members = new List<Member>();
+    AddMembers(members, true);
+  }
+	public void AddMembers(Member[] members, bool final_page) {
+		if (_members == null) _members = new List<Member>();
 		foreach (var mem in members) {
 			var member = JsonUtility.FromJson<Member>(JsonUtility.ToJson(mem));
 			_members.Add(member);
 		}
-  	_has_data = true;
+    if (final_page) {
+  	  _has_data = true;
+    }
 	}
 
   protected bool _has_data = false;
-	protected List<Member> _members;
+	protected List<Member> _members = new List<Member>();
 }

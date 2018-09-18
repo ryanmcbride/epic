@@ -39,6 +39,14 @@ namespace ChartsAndGraphs3D
 
         List<float> PartsEditor = new List<float>();      //values to %
 
+
+        Color GetPartColor(int index) {
+          return PartColors.Count > 0 ? PartColors[index % PartColors.Count] : Color.magenta;
+        }
+        int GetPartPercentage(int index) {
+          return pParts.Count > 0 ? pParts[index % pParts.Count] : 0;
+        }
+
         // Use this for initialization
         void Start()
         {
@@ -66,13 +74,10 @@ namespace ChartsAndGraphs3D
             List<TextRowInfo> list = new List<TextRowInfo>();
             for (int i = 0; i < Parts.Count; i++)
             {
-                list.Add(new TextRowInfo() { PreText = Parts[i].Text, 
-                                             PostText = TextDisplayCreator.PostText, 
-                                             Value = pParts[i], 
-                                             c = PartColors[Mathf.Min(i, PartColors.Count - 1)] });
+                var partColor = GetPartColor(i);
+                list.Add(new TextRowInfo() { PreText = Parts[i].Text, PostText = TextDisplayCreator.PostText, Value = GetPartPercentage(i), c = partColor });
             }
-
-            return list;
+           return list;
         }
 
         bool LastGlow;  //Only used below
@@ -164,17 +169,16 @@ namespace ChartsAndGraphs3D
             if (Flat)
                 h = 0;
 
-
-            Slices.Add(new Slice() { ID = Slices.Count(), PartID = Parts[i].ID, Height = h, color = PartColors[Mathf.Min(i, PartColors.Count())], go = g, BuildUpSpeed = BuildUpSpeed, parent = this });
+            Slices.Add(new Slice() { ID = Slices.Count(), PartID = Parts[i].ID, Height = h, color = GetPartColor(i), go = g, BuildUpSpeed = BuildUpSpeed, parent = this });
 
             g.GetComponent<SliceBehaivior>().info = Slices.LastOrDefault();
 
 
             if (Application.isPlaying)
-                HandleGlow(g.GetComponent<Renderer>().material, Glow, PartColors[Mathf.Min(i, PartColors.Count())]);
+                HandleGlow(g.GetComponent<Renderer>().material, Glow, GetPartColor(i));
             else
             {
-                HandleGlow(g.GetComponent<Renderer>().sharedMaterial, Glow, PartColors[i]);
+                HandleGlow(g.GetComponent<Renderer>().sharedMaterial, Glow, GetPartColor(i));
                 g.GetComponent<SliceBehaivior>().CreatedInEditMode = true;
             }
 
@@ -199,12 +203,13 @@ namespace ChartsAndGraphs3D
         private void UpdatepParts()
         {
             pParts.Clear();
-            foreach (Part item in Parts)
-            {
-                pParts.Add(Math.Max((int)((item.Value / FullValue) * 100), 1));         //At least 1
-            }
-            pParts[pParts.IndexOf(pParts.Max())] += 100 - pParts.Sum();         //modify the biggest => make it full 100%
-
+            if(Parts.Count > 0) {
+                foreach (Part item in Parts)
+                {
+                    pParts.Add(Math.Max((int)((item.Value / FullValue) * 100), 1));         //At least 1
+                }
+                pParts[pParts.IndexOf(pParts.Max())] += 100 - pParts.Sum();         //modify the biggest => make it full 100%
+           }
         }
 
         /// <summary>

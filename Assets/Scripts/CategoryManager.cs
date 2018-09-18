@@ -56,18 +56,25 @@ public class CategoryManager : MonoBehaviour {
 		return null;
 	}
 
-	public void SetCategories(Category[] categories) {
+  public void SetCategories(Category[] categories) { 
 		_categories = new List<Category>();
+		AddCategories(categories, true); 
+	}
+
+	public void AddCategories(Category[] categories, bool final_page) {
+		if(_categories == null) _categories = new List<Category>();
 		foreach (var cat in categories) {
 			var category = JsonUtility.FromJson<Category>(JsonUtility.ToJson(cat));
 			_categories.Add(category);
 		}
-		// 'Other' Category
-		var otherCategory = new Category();
-		otherCategory.guid = "other";
-		otherCategory.name = "Other";
-		_categories.Add(otherCategory);
-  	_has_data = true;
+		if (final_page) {
+			// 'Other' Category
+			var otherCategory = new Category();
+			otherCategory.guid = "other";
+			otherCategory.name = "Other";
+			_categories.Add(otherCategory);
+			_has_data = true;
+		}
 	}
 
 	public static Color32 GetCategoryColor(string categoryName) {
@@ -93,15 +100,14 @@ public class CategoryManager : MonoBehaviour {
 			case "travel":				  	return new Color32(227, 116,  52, 255);
 			case "uncategorized":     return new Color32(250,  85,  85, 255);
 			case "transfer":     			return new Color32( 20,  99, 200, 255);
-			case "other":
-			default: {
+			case "other":          	  return new Color32(149, 156, 166, 255);
+			default:
 				Debug.Log("Category Color Not Found: " + categoryName);
-				return new Color32(149, 156, 166, 255);
-			}
+				return new Color32(149, 156, 166, 255); //`other` color
 		}
 	}
 
   protected bool _has_data = false;
-	protected List<Category> _categories;
+	protected List<Category> _categories = new List<Category>();
 
 }
